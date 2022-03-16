@@ -1,3 +1,8 @@
+using Microsoft.Extensions.Configuration;
+using System.Data;
+using System.Data.Common;
+using System.Data.SqlClient;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -6,6 +11,18 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+var conStrBuilder = new SqlConnectionStringBuilder(
+        builder.Configuration.GetConnectionString("UniLifeDB"));
+
+
+DbConnection conn = new SqlConnection(conStrBuilder.ConnectionString);
+
+
+conn.Open();
+
+
+builder.Services.AddSingleton<IDbConnection>(conn);
 
 var app = builder.Build();
 

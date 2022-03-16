@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
+using System.Data.SqlClient;
 
 namespace UniLife_Backend_CPSC304_Proj.Controllers
 {
@@ -8,6 +10,12 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
     [ApiController]
     public class PostsController : ControllerBase
     {
+        private readonly IDbConnection dbConnection;
+
+        public PostsController(IDbConnection connection)
+        {
+            dbConnection = connection;
+        }
 
         [HttpGet] 
         public IEnumerable<string> Get()
@@ -29,6 +37,29 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
         public IEnumerable<string> GetDog()
         {
             return new[] { "God" };
+        }
+
+        [Route("accounts")]
+        [HttpGet]
+        public IEnumerable<string> GetAccounts()
+        {
+            List<string> result = new List<string>();
+            if (dbConnection.State != ConnectionState.Open) dbConnection.Open();
+
+            string query = @"SELECT Username from [dbo].[Account]";
+
+            using (SqlCommand command = new SqlCommand(query, (SqlConnection)dbConnection))
+            {
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        result.Add(reader.GetString(0));
+                    }
+                }
+            }
+
+            return result;
         }
 
     }
