@@ -30,5 +30,29 @@ namespace UniLife_Backend_CPSC304_Proj.Utils
             }
 
         }
+
+        public static List<T> SqlQueryFromConnection<T>(string query, Func<System.Data.Common.DbDataReader, T> map, IDbConnection connection)
+        {
+            using (var command = connection.CreateCommand())
+            {
+                command.CommandText = query;
+                command.CommandType = CommandType.Text;
+
+                if (connection.State == ConnectionState.Closed) connection.Open();
+
+                using (var result = command.ExecuteReader())
+                {
+                    var entities = new List<T>();
+
+                    while (result.Read())
+                    {
+                        entities.Add(map((System.Data.Common.DbDataReader)result));
+                    }
+
+                    return entities;
+                }
+            }
+
+        }
     }
 }

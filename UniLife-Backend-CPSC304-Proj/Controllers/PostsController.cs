@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
 using System.Data.SqlClient;
+using UniLife_Backend_CPSC304_Proj.Utils;
 
 namespace UniLife_Backend_CPSC304_Proj.Controllers
 {
@@ -44,12 +45,13 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
         public IEnumerable<string> GetAccounts()
         {
             List<string> result = new List<string>();
-            if (dbConnection.State != ConnectionState.Open) dbConnection.Open();
+            //if (dbConnection.State != ConnectionState.Open) dbConnection.Open();
 
             string query = @"SELECT Username from [dbo].[Account]";
 
-            using (SqlCommand command = new SqlCommand(query, (SqlConnection)dbConnection))
+            /*using (SqlCommand command = new SqlCommand(query, (SqlConnection)dbConnection))
             {
+                command.ExecuteReader();
                 using (SqlDataReader reader = command.ExecuteReader())
                 {
                     while (reader.Read())
@@ -57,7 +59,9 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
                         result.Add(reader.GetString(0));
                     }
                 }
-            }
+            }*/
+
+            result = QueryHandler.SqlQueryFromConnection<string>(query, x => (string)x[0], dbConnection);
 
             return result;
         }
