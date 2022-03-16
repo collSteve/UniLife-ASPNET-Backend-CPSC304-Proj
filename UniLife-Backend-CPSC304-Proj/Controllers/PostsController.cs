@@ -45,26 +45,21 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
         public IEnumerable<string> GetAccounts()
         {
             List<string> result = new List<string>();
-            //if (dbConnection.State != ConnectionState.Open) dbConnection.Open();
 
             string query = @"SELECT Username from [dbo].[Account]";
-
-            /*using (SqlCommand command = new SqlCommand(query, (SqlConnection)dbConnection))
-            {
-                command.ExecuteReader();
-                using (SqlDataReader reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        result.Add(reader.GetString(0));
-                    }
-                }
-            }*/
 
             result = QueryHandler.SqlQueryFromConnection<string>(query, x => (string)x[0], dbConnection);
 
             return result;
         }
 
+        [Route("AddAccounts")]
+        [HttpGet]
+        public void AddAccounts()
+        {
+            string query = "INSERT [dbo].Account([AID], Username, Email, [Password])"
+                + " VALUES(3, 'User3', 'User3@gmail.com', 'user3'); ";
+            QueryHandler.SqlExecutionQueryFromConnection(query, dbConnection);
+        }
     }
 }

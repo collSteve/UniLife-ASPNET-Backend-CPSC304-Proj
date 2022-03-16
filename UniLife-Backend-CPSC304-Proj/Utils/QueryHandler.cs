@@ -54,5 +54,26 @@ namespace UniLife_Backend_CPSC304_Proj.Utils
             }
 
         }
+
+        public static int SqlExecutionQueryFromConnection(string query, IDbConnection connection)
+        {
+            using (var command = connection.CreateCommand())
+            {
+                command.CommandText = query;
+                command.CommandType = CommandType.Text;
+
+                try
+                {
+                    if (connection.State == ConnectionState.Closed) connection.Open();
+
+                    return command.ExecuteNonQuery();
+                } catch (SqlException ex)
+                {
+                    throw ex;
+                }
+                
+            }
+
+        }
     }
 }
