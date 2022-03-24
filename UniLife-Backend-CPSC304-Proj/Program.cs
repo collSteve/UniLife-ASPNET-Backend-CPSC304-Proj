@@ -2,6 +2,7 @@ using Microsoft.Extensions.Configuration;
 using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
+using UniLife_Backend_CPSC304_Proj.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +24,8 @@ conn.Open();
 
 
 builder.Services.AddSingleton<IDbConnection>(conn);
+
+builder.Services.AddSingleton<PostService>(new PostService(conn));
 
 var app = builder.Build();
 

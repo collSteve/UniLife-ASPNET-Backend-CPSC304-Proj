@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
 using System.Data.SqlClient;
+using UniLife_Backend_CPSC304_Proj.Services;
 using UniLife_Backend_CPSC304_Proj.Utils;
 
 namespace UniLife_Backend_CPSC304_Proj.Controllers
@@ -15,6 +16,7 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
 
         public AccountsController(IDbConnection connection)
         {
+
             dbConnection = connection;
         }
 
