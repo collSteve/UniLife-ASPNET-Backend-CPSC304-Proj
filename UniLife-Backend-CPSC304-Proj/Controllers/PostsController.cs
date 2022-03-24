@@ -86,7 +86,7 @@ where P.PID = SP.PID
             {
                 query = @"SELECT P.pid, title, [Create_Date], [Post_Body], [Num_Likes], "+
                                     "[Num_Dislikes], [Creator_UID], [Email], Phone_Num " +
-                                    "from [dbo].[Post] P CROSS JOIN [dbo].[Selling_Post] SP " +
+                                    "from [dbo].[Post] P, [dbo].[Selling_Post] SP " +
                                     "where P.PID = SP.PID";
                 mapFunction = (x) =>
                 {
@@ -106,7 +106,7 @@ where P.PID = SP.PID
             else if (postType.ToLower().Equals(PostType.HousingPost.ToLower()))
             {
                 query = @"SELECT P.pid, title, [Create_Date], [Post_Body], [Num_Likes], [Num_Dislikes], [Creator_UID], [Email], [Address] "+
-                        "from [dbo].[Post] P CROSS JOIN [dbo].[Housing_Post] SP "+
+                        "from [dbo].[Post] P, [dbo].[Housing_Post] SP "+
                         "where P.PID = SP.PID";
                 mapFunction = (x) =>
                 {
@@ -126,7 +126,7 @@ where P.PID = SP.PID
             else if (postType.ToLower().Equals(PostType.SocialMediaPost.ToLower()))
             {
                 query = @"SELECT P.pid, title, [Create_Date], [Post_Body], [Num_Likes], [Num_Dislikes], [Creator_UID] "+
-                        "from [dbo].[Post] P CROSS JOIN [dbo].[Social_Media_Post] SP "+
+                        "from [dbo].[Post] P, [dbo].[Social_Media_Post] SP "+
                         "where P.PID = SP.PID";
                 mapFunction = (x) =>
                 {
