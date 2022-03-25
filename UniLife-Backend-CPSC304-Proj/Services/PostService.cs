@@ -66,12 +66,32 @@ namespace UniLife_Backend_CPSC304_Proj.Services
         /*
          * Throws: SqlException
          */
-        public List<PostModel> GetAllSellingPosts()
+        public List<PostModel> GetAllSellingPosts(PostModel.OrderByValue orderBy = PostModel.OrderByValue.CreatedDate,bool asc = true)
         {
+            string orderAttribute;
+
+            switch (orderBy)
+            {
+                case PostModel.OrderByValue.Title:
+                    orderAttribute = "Title";
+                    break;
+                case PostModel.OrderByValue.CreatedDate:
+                    orderAttribute = "Created_Date";
+                    break;
+                default:
+                    throw new InvalidTypeException("Invalid Order By Value. Expecting " +
+                        $"<{PostModel.OrderByValue.Title}>, or <{PostModel.OrderByValue.CreatedDate}>. " +
+                        $"But received <{orderBy}> instead");
+            }
+
+            string orderDirection = asc ? "ASC" : "DESC";
+
             string query = @"SELECT P.pid, title, [Create_Date], [Post_Body], [Num_Likes], " +
                                     "[Num_Dislikes], [Creator_UID], [Email], Phone_Num " +
                                     "from [dbo].[Post] P, [dbo].[Selling_Post] SP " +
-                                    "where P.PID = SP.PID";
+                                    "where P.PID = SP.PID "+
+                                    $"Order By {orderAttribute} " +
+                                    $"{orderDirection}";
             Func<DbDataReader, PostModel>  mapFunction = (x) =>
             {
                 PostModel p = new PostModel();

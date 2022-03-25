@@ -4,6 +4,12 @@ namespace UniLife_Backend_CPSC304_Proj.Models
 {
     public class PostModel
     {
+        public enum OrderByValue
+        {
+            CreatedDate,
+            Title
+        }
+
         [Required]
         public int Pid { get; set; }
 
