@@ -10,30 +10,27 @@ using UniLife_Backend_CPSC304_Proj.Utils;
 
 namespace UniLife_Backend_CPSC304_Proj.Controllers
 {
-    // www.here.com/api/posts
+    // www.server.com/api/posts
     [Route("api/[controller]")]
     [ApiController]
     public class PostsController : ControllerBase
     {
-
         internal class PostType
         {
-
             public const string SellingPost =  "SellingPost";
             public const string HousingPost = "HousingPost"; 
             public const string SocialMediaPost = "SocialMediaPost";
-
         }
 
         private readonly IDbConnection dbConnection;
         private readonly PostService postService;
-
 
         public PostsController(IDbConnection connection, PostService postService)
         {
             dbConnection = connection;
             this.postService = postService;
         }
+
 
         [HttpGet]
         public ActionResult<List<PostModel>> GetAllPosts() {
@@ -50,12 +47,27 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
         }
 
 
+        // www.server.com/api/posts/Type/xxxx
         [HttpGet("Type/{postType}")]
-        public ActionResult<List<PostModel>> GetPosts(string postType) {
+        public ActionResult<List<PostModel>> GetPosts(string postType, PostModel.OrderByValue? orderBy, bool? asc) {
             try
             {
-                return postService.GetPostsByType(postType);
-
+                if (orderBy != null && asc != null)
+                {
+                    return postService.GetPostsByType(postType,(PostModel.OrderByValue) orderBy,(bool) asc);
+                }
+                else if (orderBy == null && asc != null)
+                {
+                    return postService.GetPostsByType(postType, asc: (bool)asc);
+                }
+                else if (orderBy != null && asc == null)
+                {
+                    return postService.GetPostsByType(postType, orderBy:(PostModel.OrderByValue)orderBy);
+                }
+                else
+                {
+                    return postService.GetPostsByType(postType);
+                }
             } 
             catch(InvalidTypeException ex)
             {

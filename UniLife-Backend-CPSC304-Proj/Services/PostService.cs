@@ -41,19 +41,21 @@ namespace UniLife_Backend_CPSC304_Proj.Services
         /*
          * Throws: InvalidTypeException, SqlException
          */
-        public List<PostModel> GetPostsByType(string postType)
+        public List<PostModel> GetPostsByType(string postType, 
+            PostModel.OrderByValue orderBy = PostModel.OrderByValue.CreatedDate, 
+            bool asc = false)
         {
             if (postType.ToLower().Equals(PostType.SellingPost.ToLower()))
             {
-                return GetAllSellingPosts();
+                return GetAllSellingPosts(orderBy, asc);
             }
             else if (postType.ToLower().Equals(PostType.HousingPost.ToLower()))
             {
-                return GetAllHousingPosts();
+                return GetAllHousingPosts(orderBy, asc);
             }
             else if (postType.ToLower().Equals(PostType.SocialMediaPost.ToLower()))
             {
-                return GetAllSocialMediaPosts();
+                return GetAllSocialMediaPosts(orderBy, asc);
             }
             else
             {
@@ -63,26 +65,27 @@ namespace UniLife_Backend_CPSC304_Proj.Services
             }
         }
 
-        /*
-         * Throws: SqlException
-         */
-        public List<PostModel> GetAllSellingPosts(PostModel.OrderByValue orderBy = PostModel.OrderByValue.CreatedDate,bool asc = true)
+        private string GetOrderByAttribute(PostModel.OrderByValue order)
         {
-            string orderAttribute;
-
-            switch (orderBy)
+            switch (order)
             {
                 case PostModel.OrderByValue.Title:
-                    orderAttribute = "Title";
-                    break;
+                    return "Title";
                 case PostModel.OrderByValue.CreatedDate:
-                    orderAttribute = "Created_Date";
-                    break;
+                    return "Create_Date";
                 default:
                     throw new InvalidTypeException("Invalid Order By Value. Expecting " +
                         $"<{PostModel.OrderByValue.Title}>, or <{PostModel.OrderByValue.CreatedDate}>. " +
-                        $"But received <{orderBy}> instead");
+                        $"But received <{order}> instead");
             }
+        }
+
+        /*
+         * Throws: SqlException
+         */
+        public List<PostModel> GetAllSellingPosts(PostModel.OrderByValue orderBy = PostModel.OrderByValue.CreatedDate,bool asc = false)
+        {
+            string orderAttribute = GetOrderByAttribute(orderBy);
 
             string orderDirection = asc ? "ASC" : "DESC";
 
@@ -112,11 +115,18 @@ namespace UniLife_Backend_CPSC304_Proj.Services
                                         dbConnection);
         }
 
-        public List<PostModel> GetAllHousingPosts()
+        public List<PostModel> GetAllHousingPosts(PostModel.OrderByValue orderBy = PostModel.OrderByValue.CreatedDate, bool asc = false)
         {
+            string orderAttribute = GetOrderByAttribute(orderBy);
+
+            string orderDirection = asc ? "ASC" : "DESC";
+
             string query = @"SELECT P.pid, title, [Create_Date], [Post_Body], [Num_Likes], [Num_Dislikes], [Creator_UID], [Email], [Address] " +
                         "from [dbo].[Post] P, [dbo].[Housing_Post] SP " +
-                        "where P.PID = SP.PID";
+                        "where P.PID = SP.PID " +
+                        $"Order By {orderAttribute} " +
+                        $"{orderDirection}";
+
             Func<DbDataReader, PostModel> mapFunction = (x) =>
             {
                 PostModel p = new PostModel();
@@ -137,11 +147,18 @@ namespace UniLife_Backend_CPSC304_Proj.Services
                                         dbConnection);
         }
 
-        public List<PostModel> GetAllSocialMediaPosts()
+        public List<PostModel> GetAllSocialMediaPosts(PostModel.OrderByValue orderBy = PostModel.OrderByValue.CreatedDate, bool asc = false)
         {
+            string orderAttribute = GetOrderByAttribute(orderBy);
+
+            string orderDirection = asc ? "ASC" : "DESC";
+
             string query = @"SELECT P.pid, title, [Create_Date], [Post_Body], [Num_Likes], [Num_Dislikes], [Creator_UID] " +
                         "from [dbo].[Post] P, [dbo].[Social_Media_Post] SP " +
-                        "where P.PID = SP.PID";
+                        "where P.PID = SP.PID " +
+                        $"Order By {orderAttribute} " +
+                        $"{orderDirection}";
+
             Func<DbDataReader, PostModel> mapFunction = (x) =>
             {
                 PostModel p = new PostModel();
@@ -159,5 +176,6 @@ namespace UniLife_Backend_CPSC304_Proj.Services
                                         mapFunction,
                                         dbConnection);
         }
+
     }
 }

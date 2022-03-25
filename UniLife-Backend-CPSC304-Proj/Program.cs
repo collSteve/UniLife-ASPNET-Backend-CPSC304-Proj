@@ -19,13 +19,13 @@ var conStrBuilder = new SqlConnectionStringBuilder(
 
 DbConnection conn = new SqlConnection(conStrBuilder.ConnectionString);
 
-
 conn.Open();
-
 
 builder.Services.AddSingleton<IDbConnection>(conn);
 
 builder.Services.AddSingleton<PostService>(new PostService(conn));
+
+
 
 var app = builder.Build();
 
