@@ -52,22 +52,9 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
         public ActionResult<List<PostModel>> GetPosts(string postType, PostModel.OrderByValue? orderBy, bool? asc) {
             try
             {
-                if (orderBy != null && asc != null)
-                {
-                    return postService.GetPostsByType(postType,(PostModel.OrderByValue) orderBy,(bool) asc);
-                }
-                else if (orderBy == null && asc != null)
-                {
-                    return postService.GetPostsByType(postType, asc: (bool)asc);
-                }
-                else if (orderBy != null && asc == null)
-                {
-                    return postService.GetPostsByType(postType, orderBy:(PostModel.OrderByValue)orderBy);
-                }
-                else
-                {
-                    return postService.GetPostsByType(postType);
-                }
+                return postService.GetPostsByType(postType,
+                    orderBy ?? PostModel.OrderByValue.CreatedDate,
+                    asc ?? false);
             } 
             catch(InvalidTypeException ex)
             {
@@ -85,24 +72,9 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
         {
             try
             {
-                if (orderBy != null && asc != null)
-                {
-                    return postService.SearchPostsType(postType, title, (PostModel.OrderByValue)orderBy, (bool)asc);
-                }
-                else if (orderBy == null && asc != null)
-                {
-                    return postService.SearchPostsType(postType, title, asc:(bool)asc);
-
-                }
-                else if (orderBy != null && asc == null)
-                {
-                    return postService.SearchPostsType(postType, title, orderBy:(PostModel.OrderByValue)orderBy);
-
-                }
-                else
-                {
-                    return postService.SearchPostsType(postType, title);
-                }
+                return postService.SearchPostsType(postType, title, 
+                    orderBy: orderBy ?? PostModel.OrderByValue.CreatedDate, 
+                    asc ?? false);
             }
             catch (InvalidTypeException ex)
             {
@@ -112,6 +84,18 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
             {
                 return this.BadRequest($"[SQL Query Error]: {ex.Message}");
             }
+        }
+
+        [HttpGet("Categories")]
+        public ActionResult<List<PostModel>> GetPostByCategories(string postType, 
+            [FromQuery(Name = "category")] List<string> categories,
+            PostModel.OrderByValue? orderBy, bool? asc)
+        {
+            foreach (string s in categories)
+            {
+                Console.WriteLine(s);
+            }
+            return new List<PostModel>();
         }
     }
 }
