@@ -306,47 +306,16 @@ namespace UniLife_Backend_CPSC304_Proj.Services
             return QueryHandler.SqlQueryFromConnection<PostModel>(sQuery, dbConnection);
         }
 
-        public List<PostModel> SearchPostsType(string type, 
+        public List<PostModel> SearchPostsType(string postType, 
             string title,
             PostModel.OrderByValue orderBy = PostModel.OrderByValue.CreatedDate, 
             bool asc = false)
         {
-            SelectionQueryObject<PostModel> sQuery = GetAllSellingPostsQuery(orderBy, asc);
+            SelectionQueryObject<PostModel> sQuery = GetPostsByTypeQuery(postType, orderBy, asc);
 
             sQuery.AddToWhereClause($"and (title LIKE '%{title}%' or [Post_Body] LIKE '%{title}%')");
 
-            return QueryHandler.SqlQueryFromConnection<PostModel>(sQuery.SqlQuery(), sQuery.QueryMapFunction, dbConnection);
+            return QueryHandler.SqlQueryFromConnection<PostModel>(sQuery, dbConnection);
         }
-
-        public List<PostModel> SearchSocialMediaPosts(string title, PostModel.OrderByValue orderBy = PostModel.OrderByValue.CreatedDate, bool asc = false)
-        {
-            string orderAttribute = GetOrderByAttribute(orderBy);
-
-            string orderDirection = asc ? "ASC" : "DESC";
-
-            string query = @"SELECT P.pid, title, [Create_Date], [Post_Body], [Num_Likes], [Num_Dislikes], [Creator_UID] " +
-                        "from [dbo].[Post] P, [dbo].[Social_Media_Post] SP " +
-                        $"where P.PID = SP.PID and title LIKE '%{title}%' "+
-                        $"Order By {orderAttribute} " +
-                        $"{orderDirection}";
-
-            Func<DbDataReader, PostModel> mapFunction = (x) =>
-            {
-                PostModel p = new PostModel();
-                p.Pid = (int)x[0];
-                p.Title = (string)x[1];
-                p.CreatedDate = (DateTime)x[2];
-                p.PostBody = (string)x[3];
-                p.NumLikes = (int)x[4];
-                p.NumDislikes = (int)x[5];
-                p.CreatorAid = (int)x[6];
-                return p;
-            };
-
-            return QueryHandler.SqlQueryFromConnection<PostModel>(query,
-                                        mapFunction,
-                                        dbConnection);
-        }
-
     }
 }

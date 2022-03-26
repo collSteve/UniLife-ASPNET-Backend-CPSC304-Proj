@@ -79,13 +79,34 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
             }
         }
 
-        [HttpGet("SerachTitle")]
-        public ActionResult<List<PostModel>> GetPostBySerachTitle(string title)
+        [HttpGet("SerachTitle/{postType}")]
+        public ActionResult<List<PostModel>> GetPostBySerachTitle(string postType, string title,
+            PostModel.OrderByValue? orderBy, bool? asc)
         {
             try
             {
-                // return postService.SearchSocialMediaPosts(title);
-                return postService.SearchPostsType("sellingpost", title);
+                if (orderBy != null && asc != null)
+                {
+                    return postService.SearchPostsType(postType, title, (PostModel.OrderByValue)orderBy, (bool)asc);
+                }
+                else if (orderBy == null && asc != null)
+                {
+                    return postService.SearchPostsType(postType, title, asc:(bool)asc);
+
+                }
+                else if (orderBy != null && asc == null)
+                {
+                    return postService.SearchPostsType(postType, title, orderBy:(PostModel.OrderByValue)orderBy);
+
+                }
+                else
+                {
+                    return postService.SearchPostsType(postType, title);
+                }
+            }
+            catch (InvalidTypeException ex)
+            {
+                return this.BadRequest($"[Invalid Type Error]: {ex.Message}");
             }
             catch (SqlException ex)
             {
