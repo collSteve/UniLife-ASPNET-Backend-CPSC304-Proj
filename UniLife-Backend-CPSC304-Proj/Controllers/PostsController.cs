@@ -73,7 +73,7 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
             try
             {
                 return postService.SearchPostsType(postType, title, 
-                    orderBy: orderBy ?? PostModel.OrderByValue.CreatedDate, 
+                    orderBy ?? PostModel.OrderByValue.CreatedDate, 
                     asc ?? false);
             }
             catch (InvalidTypeException ex)
@@ -88,14 +88,23 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
 
         [HttpGet("Categories")]
         public ActionResult<List<PostModel>> GetPostByCategories(string postType, 
-            [FromQuery(Name = "category")] List<string> categories,
+            [FromQuery(Name = "category")] string[] categories,
             PostModel.OrderByValue? orderBy, bool? asc)
         {
-            foreach (string s in categories)
+            try
             {
-                Console.WriteLine(s);
+                return postService.GetPostsWithAllCategories(postType, categories,
+                    orderBy ?? PostModel.OrderByValue.CreatedDate,
+                    asc ?? false);
             }
-            return new List<PostModel>();
+            catch (InvalidTypeException ex)
+            {
+                return this.BadRequest($"[Invalid Type Error]: {ex.Message}");
+            }
+            catch (SqlException ex)
+            {
+                return this.BadRequest($"[SQL Query Error]: {ex.Message}");
+            }
         }
     }
 }

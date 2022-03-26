@@ -317,5 +317,37 @@ namespace UniLife_Backend_CPSC304_Proj.Services
 
             return QueryHandler.SqlQueryFromConnection<PostModel>(sQuery, dbConnection);
         }
+
+        public List<PostModel> GetPostsWithAllCategories(string postType, 
+            string[] categories,
+            PostModel.OrderByValue orderBy = PostModel.OrderByValue.CreatedDate,
+            bool asc = false)
+        {
+            SelectionQueryObject<PostModel> sQuery = GetPostsByTypeQuery(postType, orderBy, asc);
+
+            string[] selectedCategoriesWhereConditions = new string[categories.Length];
+
+
+            for (int i = 0; i < categories.Length; i++)
+            {
+                selectedCategoriesWhereConditions[i] = $"C.ctg_type='{categories[i]}'";
+            }
+
+            string selectedCategoriesWhereClause = String.Join(" or ", selectedCategoriesWhereConditions);
+
+            // Division: P / selectedCategories
+            sQuery.AddToWhereClause("and not exists (" +
+                $"(select C.ctg_type from Categories C where {selectedCategoriesWhereClause}) " +
+                "except " +
+                "(select PC.ctg_type from Post_category PC where P.PID = PC.PID) " +
+                ")");
+            // Make sure selected categories exist in the post_category
+            sQuery.AddToWhereClause("and 0<(select Count(C.ctg_type) from Categories C " +
+                $"where {selectedCategoriesWhereClause})");
+
+            Console.WriteLine(sQuery.FormattedSqlQuery());
+
+            return QueryHandler.SqlQueryFromConnection(sQuery, dbConnection);
+        }
     }
 }
