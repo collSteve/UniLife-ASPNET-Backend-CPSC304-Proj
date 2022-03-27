@@ -56,5 +56,13 @@ namespace UniLife_Backend_CPSC304_Proj.Models
         public bool? Asc { get; set; }
     }
 
-    
+    public class UpdatePostPutRequestObject
+    {
+        public int pid { get; set; }
+        public string? postTitle { get; set; }
+        public string? postBody { get; set; }
+        public string? email { get; set; }
+        public string? phoneNumber { get; set; }
+        public string? address { get; set; }
+    }
 }

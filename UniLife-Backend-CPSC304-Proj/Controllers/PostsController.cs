@@ -161,5 +161,29 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
             }
         }
 
+        [HttpPut]
+        public ActionResult UpdatePost([FromBody] UpdatePostPutRequestObject updatePostPutRequestObject)
+        {
+            try
+            {
+                postService.UpdatePost(
+                    updatePostPutRequestObject.pid,
+                    updatePostPutRequestObject.postTitle,
+                    updatePostPutRequestObject.postBody,
+                    updatePostPutRequestObject.email,
+                    updatePostPutRequestObject.phoneNumber,
+                    updatePostPutRequestObject.address);
+                return Ok();
+            }
+            catch (SqlException ex)
+            {
+                return this.BadRequest($"[SQL Query Error]: {ex.Message}");
+            }
+            catch (NonExistingObjectException ex)
+            {
+                return this.BadRequest($"[Non-Existing Object]: {ex.Message}");
+            }
+        }
+
     }
 }

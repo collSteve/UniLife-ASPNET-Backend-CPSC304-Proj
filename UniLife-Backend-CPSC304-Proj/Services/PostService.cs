@@ -381,8 +381,7 @@ namespace UniLife_Backend_CPSC304_Proj.Services
             catch (SqlException ex)
             {
                 // delete added post 
-                string deleteQuery = "";
-
+                DeletePost(generatedPID);
                 throw ex;
             }
         }
@@ -419,6 +418,77 @@ namespace UniLife_Backend_CPSC304_Proj.Services
         {
             string deleteQuery = $"DELETE FROM [dbo].Post WHERE pid={pid}";
             QueryHandler.SqlExecutionQueryFromConnection(deleteQuery, dbConnection);
+        }
+
+        public void UpdatePost(int pid, string? postTitle, string? postBody,
+            string? email, string? phoneNumber, string? address)
+        {
+            string postType = DeterminePostType(pid)?? 
+                throw new NonExistingObjectException($"Post with PID {pid} does not exist.");
+
+            // update post table
+            List<string> setClauses = new List<string>();
+            if (postTitle != null) setClauses.Add($"title = '{postTitle}'");
+            if (postBody != null) setClauses.Add($"Post_Body = '{postBody}'");
+
+
+            if (setClauses.Count > 0)
+            {
+                string setClause = String.Join(", ", setClauses.ToArray());
+                string updatePostQuery = $"UPDATE [dbo].Post SET {setClause} WHERE pid={pid}";
+                QueryHandler.SqlExecutionQueryFromConnection(updatePostQuery, dbConnection);
+
+            }
+
+
+            // update type specific table
+            List<string> typeSetClauses = new List<string>();
+            string? updateTypePostQuery = null;
+            switch (postType)
+            {
+                case PostType.SellingPost:
+                    {
+                        if (email != null) typeSetClauses.Add($"email = '{email}'");
+                        if (phoneNumber != null) typeSetClauses.Add($"Phone_Num = '{phoneNumber}'");
+                        string typeSetClause = String.Join(", ", typeSetClauses.ToArray());
+
+                        updateTypePostQuery = $"UPDATE [dbo].Selling_Post SET {typeSetClause} WHERE pid={pid}";
+                        break;
+                    }
+                    
+                case PostType.HousingPost:
+                    {
+                        if (email != null) typeSetClauses.Add($"email = '{email}'");
+                        if (address != null) typeSetClauses.Add($"address = '{address}'");
+                        string typeSetClause = String.Join(", ", typeSetClauses.ToArray());
+
+                        updateTypePostQuery = $"UPDATE [dbo].Housing_Post SET {typeSetClause} WHERE pid={pid}";
+
+
+                        break;
+                    }
+                    
+            }
+
+            if (updateTypePostQuery != null && typeSetClauses.Count>0)
+                QueryHandler.SqlExecutionQueryFromConnection(updateTypePostQuery, dbConnection);
+        }
+
+        private string? DeterminePostType(int pid)
+        {
+            var numPostQuery = (string s, int id) => $"Select Count(pid) from [dbo].{s} where pid={id}";
+
+           int selling = QueryHandler.SqlQueryFromConnection<int>(numPostQuery("Selling_Post", pid), 
+                (s) => (int)s[0], dbConnection)[0];
+            int housing = QueryHandler.SqlQueryFromConnection<int>(numPostQuery("Housing_Post", pid),
+                (s) => (int)s[0], dbConnection)[0];
+            int socialMedia = QueryHandler.SqlQueryFromConnection<int>(numPostQuery("Social_Media_Post", pid),
+                (s) => (int)s[0], dbConnection)[0];
+
+            if (selling > 0) return PostType.SellingPost;
+            if (housing > 0) return PostType.HousingPost;
+            if (socialMedia > 0) return PostType.SocialMediaPost;
+            return null;
         }
     }
 }
