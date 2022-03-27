@@ -21,40 +21,54 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
         }
 
 
-
-/*      
- *      These are just test Steve implemented when setting up the server. 
- *      For whoever is doing these do not get influenced.
- *      
-        [Route("Accounts")]
+        // www.server.com/api/Account/group/(Gid)
         [HttpGet]
-        public IEnumerable<string> GetAccounts()
+        public ActionResult<List<GroupModel>> JoinGroup(int Gid)
         {
-            List<string> result = new List<string>();
-
-            string query = @"SELECT Username from [dbo].[Account]";
-
-            result = QueryHandler.SqlQueryFromConnection<string>(query, x => (string)x[0], dbConnection);
-
-            return result;
-        }
-
-        [Route("AddAccount")]
-        [HttpGet]
-        public IActionResult AddAccount(int aid)
-        {
-            string query = "INSERT [dbo].Account([AID], Username, Email, [Password])"
-                + " VALUES(3, 'User3', 'User3@gmail.com', 'user3'); ";
-
             try
             {
-                QueryHandler.SqlExecutionQueryFromConnection(query, dbConnection);
-                return CreatedAtAction(nameof(AddAccount), new { aid = aid });
+                return groupService.GetAllGroups();
+
             }
             catch (SqlException ex)
             {
-                return this.BadRequest(ex.Message);
+                return this.BadRequest($"[SQL Query Error]: {ex.Message}");
             }
-        }*/
+
+        }
+        /*      
+         *      These are just test Steve implemented when setting up the server. 
+         *      For whoever is doing these do not get influenced.
+         *      
+                [Route("Accounts")]
+                [HttpGet]
+                public IEnumerable<string> GetAccounts()
+                {
+                    List<string> result = new List<string>();
+
+                    string query = @"SELECT Username from [dbo].[Account]";
+
+                    result = QueryHandler.SqlQueryFromConnection<string>(query, x => (string)x[0], dbConnection);
+
+                    return result;
+                }
+
+                [Route("AddAccount")]
+                [HttpGet]
+                public IActionResult AddAccount(int aid)
+                {
+                    string query = "INSERT [dbo].Account([AID], Username, Email, [Password])"
+                        + " VALUES(3, 'User3', 'User3@gmail.com', 'user3'); ";
+
+                    try
+                    {
+                        QueryHandler.SqlExecutionQueryFromConnection(query, dbConnection);
+                        return CreatedAtAction(nameof(AddAccount), new { aid = aid });
+                    }
+                    catch (SqlException ex)
+                    {
+                        return this.BadRequest(ex.Message);
+                    }
+                }*/
     }
 }
