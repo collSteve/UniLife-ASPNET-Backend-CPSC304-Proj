@@ -89,7 +89,8 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
                 return this.BadRequest($"[Non-Existing Object]: {ex.Message}");
             }
         }
-        */
+        */  
+        [HttpPut]
         public ActionResult JoinGroup([FromBody]accGroupObj acc) {
 
             int aid = acc.AID;

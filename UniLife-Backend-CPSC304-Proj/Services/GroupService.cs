@@ -77,12 +77,11 @@ namespace UniLife_Backend_CPSC304_Proj.Services
         {
             string query = @"SELECT [Group_Name]" +
                         "from [dbo].[Group]" +
-                        "where [Group_Name] like '%{name}%'";
+                        $"where [Group_Name] like '%{name}%'";
             Func<DbDataReader, GroupModel> mapFunction = (x) =>
             {
                 GroupModel g = new GroupModel();
-                g.Gid = (int)x[0];
-                g.GroupName = (string)x[1];
+                g.GroupName = (string)x[0];
 
                 return g;
             };

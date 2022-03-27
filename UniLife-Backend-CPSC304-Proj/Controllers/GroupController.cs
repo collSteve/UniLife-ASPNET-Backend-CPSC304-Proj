@@ -42,8 +42,7 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
 
         }
         // www.server.com/api/Group/create
-        [HttpPost("create")]
-
+        [HttpPost]
         public ActionResult CreateGroup([FromBody]GroupNewObj gno) {
 
             int Gid = gno.Gid;
@@ -64,7 +63,7 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
         }
 
         // www.server.com/api/Group/delete
-        [HttpDelete("delete")]
+        [HttpDelete]
 
         public ActionResult DeleteGroup(int Gid)
         {
