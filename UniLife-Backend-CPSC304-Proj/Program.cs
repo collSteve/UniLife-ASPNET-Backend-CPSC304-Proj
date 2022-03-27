@@ -26,6 +26,7 @@ conn.Open();
 builder.Services.AddSingleton<IDbConnection>(conn);
 
 builder.Services.AddSingleton<PostService>(new PostService(conn));
+builder.Services.AddSingleton<GroupService>(new GroupService(conn));
 
 var app = builder.Build();
 
