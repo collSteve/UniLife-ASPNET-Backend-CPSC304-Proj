@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
+using UniLife_Backend_CPSC304_Proj.Exceptions;
+using UniLife_Backend_CPSC304_Proj.Models;
 using UniLife_Backend_CPSC304_Proj.Services;
 using UniLife_Backend_CPSC304_Proj.Utils;
 
@@ -13,21 +16,23 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
     {
 
         private readonly IDbConnection dbConnection;
-
-        public AccountsController(IDbConnection connection)
+        private AccountService accountService;
+        public AccountsController(IDbConnection connection, AccountService accountService)
         {
 
             dbConnection = connection;
+            this.accountService = accountService;
         }
 
 
         // www.server.com/api/Account/group/(Gid)
         [HttpGet]
-        public ActionResult<List<GroupModel>> JoinGroup(int Gid)
+        public ActionResult JoinGroup(int Gid)
         {
             try
             {
-                return groupService.GetAllGroups();
+                accountService.JoinGroup(Gid);
+                return Ok();
 
             }
             catch (SqlException ex)

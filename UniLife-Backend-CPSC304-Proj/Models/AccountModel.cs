@@ -17,10 +17,8 @@ namespace UniLife_Backend_CPSC304_Proj.Models
         public string Password { get; set; }
     }
 
-    public class AccountObj { 
+    public class accGroupObj { 
         public int AID { get; set; }
-        public string Username { get; set; }
-        public string Email { get; set; }
-        public string Password { get; set; }
+        public int GID { get; set; }
     }
 }
