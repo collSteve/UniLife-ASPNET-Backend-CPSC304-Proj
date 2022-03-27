@@ -42,16 +42,17 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
 
         }
         // www.server.com/api/Group/create
-        [HttpGet("create")]
+        [HttpPost("create")]
 
-        public ActionResult CreateGroup(GroupNewObj gno) {
+        public ActionResult CreateGroup([FromBody]GroupNewObj gno) {
 
             int Gid = gno.Gid;
             string groupName = gno.GroupName;
+            int Aid = gno.Aid;
 
             try
             {
-               groupService.CreateGroup(Gid, groupName);
+               groupService.CreateGroup(Gid, groupName, Aid);
                 return Ok();
 
             }
@@ -63,7 +64,7 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
         }
 
         // www.server.com/api/Group/delete
-        [HttpGet("delete")]
+        [HttpDelete("delete")]
 
         public ActionResult DeleteGroup(int Gid)
         {

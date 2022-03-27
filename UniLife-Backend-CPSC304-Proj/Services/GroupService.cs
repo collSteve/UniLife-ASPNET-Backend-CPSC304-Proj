@@ -37,7 +37,7 @@ namespace UniLife_Backend_CPSC304_Proj.Services
         }
 
         //inserts new group
-        public void CreateGroup(int Gid, string GroupName)
+        public void CreateGroup(int Gid, string GroupName, int Aid)
         {
             string query = @"INSERT INTO [dbo].[Group]([Gid], [Group_Name])"  +
                             $"VALUES ('{Gid}', '{GroupName}'";

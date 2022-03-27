@@ -67,7 +67,7 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
                 return this.BadRequest($"[SQL Query Error]: {ex.Message}");
             }
         }
-
+        /*
         [HttpPut]
         public ActionResult UpdateAccount([FromBody] UpdateAccountRequestObj updateAccountRequestObj)
         {
@@ -89,6 +89,28 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
                 return this.BadRequest($"[Non-Existing Object]: {ex.Message}");
             }
         }
+        */
+        public ActionResult JoinGroup([FromBody]accGroupObj acc) {
+
+            int aid = acc.AID;
+            int gid = acc.GID;
+            string role = acc.Role;
+
+            try
+            {
+                accountService.JoinGroup(aid, gid, role);
+                return Ok();
+            }
+            catch (InvalidTypeException ex)
+            {
+                return this.BadRequest($"[Invalid Type Error]: {ex.Message}");
+            }
+            catch (SqlException ex)
+            {
+                return this.BadRequest($"[SQL Query Error]: {ex.Message}");
+            }
+        }
+
         /*
         // Getting all accounts in group
         [HttpGet]

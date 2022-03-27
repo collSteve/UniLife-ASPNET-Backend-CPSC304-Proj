@@ -16,6 +16,7 @@ namespace UniLife_Backend_CPSC304_Proj.Models
     public class GroupNewObj { 
         public int Gid { get; set; }
         public string GroupName { get; set; }
+        public int Aid { get; set; }
     
     }
 
