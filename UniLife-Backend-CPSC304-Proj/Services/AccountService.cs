@@ -32,17 +32,17 @@ namespace UniLife_Backend_CPSC304_Proj.Services
             byte[] hashed = md5Hasher.ComputeHash(Encoding.UTF8.GetBytes(hashString));
             int generatedAID = BitConverter.ToInt32(hashed, 0);
 
-            // Insert tuple into the Account Table
             string accountQueryString = "INSERT [dbo].Account([AID], [Username], [Email], [Password]) " +
                 $"VALUES({generatedAID}, '{username}', '{password}', '{email}')";
 
-            // Insert tuple into its Account type table
             string createAccountTypeQuery = GetCreateQueryForAccountTypes(accountType, generatedAID);
 
+            // Insert tuple into the Account Table
             QueryHandler.SqlExecutionQueryFromConnection(accountQueryString, dbConnection);
 
             try
             {
+                // Insert tuple into its Account type table
                 QueryHandler.SqlExecutionQueryFromConnection(createAccountTypeQuery, dbConnection);
             }
             catch (SqlException ex)
