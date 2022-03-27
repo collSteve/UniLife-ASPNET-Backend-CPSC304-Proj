@@ -147,5 +147,19 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
             }
         }
 
+        [HttpDelete]
+        public ActionResult DeletePost([FromBody] int pid)
+        {
+            try
+            {
+                postService.DeletePost(pid);
+                return Ok();
+            }
+            catch (SqlException ex)
+            {
+                return this.BadRequest($"[SQL Query Error]: {ex.Message}");
+            }
+        }
+
     }
 }

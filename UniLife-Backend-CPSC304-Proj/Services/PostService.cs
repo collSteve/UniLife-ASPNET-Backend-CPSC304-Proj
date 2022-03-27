@@ -414,5 +414,11 @@ namespace UniLife_Backend_CPSC304_Proj.Services
             }
             return query;
         }
+
+        public void DeletePost(int pid)
+        {
+            string deleteQuery = $"DELETE FROM [dbo].Post WHERE pid={pid}";
+            QueryHandler.SqlExecutionQueryFromConnection(deleteQuery, dbConnection);
+        }
     }
 }
