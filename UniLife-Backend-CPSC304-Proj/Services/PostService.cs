@@ -1,6 +1,8 @@
 ﻿using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
+using System.Security.Cryptography;
+using System.Text;
 using UniLife_Backend_CPSC304_Proj.Exceptions;
 using UniLife_Backend_CPSC304_Proj.Models;
 using UniLife_Backend_CPSC304_Proj.Utils;
@@ -348,6 +350,69 @@ namespace UniLife_Backend_CPSC304_Proj.Services
             Console.WriteLine(sQuery.FormattedSqlQuery());
 
             return QueryHandler.SqlQueryFromConnection(sQuery, dbConnection);
+        }
+
+        public void InsertNewPost(string postType, string postTitle, string postBody, 
+            DateTime createDate, int creatorUID, string? email, string? phoneNumber, string? address)
+        {
+            // generate pid by hashing
+            string hashString = $"{creatorUID}{createDate}{postTitle}";
+            MD5 md5Hasher = MD5.Create();
+            byte[] hashed = md5Hasher.ComputeHash(Encoding.UTF8.GetBytes(hashString));
+            int generatedPID = BitConverter.ToInt32(hashed, 0);
+
+            // insert to Post table
+            string postQueryString = "INSERT [dbo].Post([PID], [Create_Date], [Title], [Post_Body], [Num_Likes], [Num_Dislikes], [Creator_UID]) " +
+            $"VALUES({generatedPID}, '{createDate}', '{postTitle}', '{postBody}', 0, 0, {creatorUID})";
+
+            Console.WriteLine(postQueryString);
+
+            // insert to according types
+            string insertTypeQuery = GetInsertQueryForPostTypes(postType, generatedPID,
+                email, phoneNumber, address);
+            Console.WriteLine(insertTypeQuery);
+
+            QueryHandler.SqlExecutionQueryFromConnection(postQueryString, dbConnection);
+
+            try
+            {
+                QueryHandler.SqlExecutionQueryFromConnection(insertTypeQuery, dbConnection);
+            }
+            catch (SqlException ex)
+            {
+                // delete added post 
+                string deleteQuery = "";
+
+                throw ex;
+            }
+        }
+
+        private string GetInsertQueryForPostTypes(string postType, int pid, 
+            string? email, string? phoneNumber, string? address)
+        {
+            string query = "";
+            if (postType.ToLower().Equals(PostType.SellingPost.ToLower()))
+            {
+                query = "INSERT [dbo].Selling_Post([PID], [Phone_Num], [Email]) " +
+                    $"VALUES({pid}, {phoneNumber ?? ""}, '{email ?? ""}')";
+            }
+            else if (postType.ToLower().Equals(PostType.HousingPost.ToLower()))
+            {
+                query = "INSERT [dbo].Housing_Post([PID], [Address], [Email]) " +
+                    $"VALUES({pid}, '{address ?? ""}', '{email ?? ""}')";
+            }
+            else if (postType.ToLower().Equals(PostType.SocialMediaPost.ToLower()))
+            {
+                query = "INSERT [dbo].Social_Media_Post([PID]) " +
+                    $"VALUES({pid})";
+            }
+            else
+            {
+                throw new InvalidTypeException($"Invalid post type. Expected types: " +
+                        $"<{PostType.HousingPost}>, <{PostType.SellingPost}> and <{PostType.SocialMediaPost}>." +
+                        $"But received <{postType}> instead.");
+            }
+            return query;
         }
     }
 }

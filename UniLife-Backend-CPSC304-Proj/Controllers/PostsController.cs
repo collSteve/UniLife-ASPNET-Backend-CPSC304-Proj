@@ -87,12 +87,17 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
         }
 
         [HttpGet("Categories")]
-        public ActionResult<List<PostModel>> GetPostByCategories(string postType, 
+        public ActionResult<List<PostModel>> GetPostByCategories(string postType,
             [FromQuery(Name = "category")] string[] categories,
-            PostModel.OrderByValue? orderBy, bool? asc)
-        {
+            PostModel.OrderByValue? orderBy, bool? asc
+            /*[FromBody] PostByCategoriesRequestObject postByCategoriesRequestObject*/)
+        {   
             try
             {
+                /*string postType = postByCategoriesRequestObject.PostType;
+                string[] categories = postByCategoriesRequestObject.Categories;
+                PostModel.OrderByValue? orderBy = postByCategoriesRequestObject.OrderBy;
+                bool? asc = postByCategoriesRequestObject.Asc;*/
                 return postService.GetPostsWithAllCategories(postType, categories,
                     orderBy ?? PostModel.OrderByValue.CreatedDate,
                     asc ?? false);
@@ -106,5 +111,41 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
                 return this.BadRequest($"[SQL Query Error]: {ex.Message}");
             }
         }
+
+        [HttpPost]
+        public ActionResult CreateNewPost(/*string postType,
+            [FromQuery(Name = "title")] string postTitle,
+            [FromQuery(Name = "body")] string postBody,
+            [FromQuery(Name = "date")] DateTime createDate,
+            [FromQuery(Name = "UID")]  int creatorUID,
+            [FromQuery(Name = "email")]  string? email,
+            [FromQuery(Name = "phoneNumber")]  string? phoneNumber,
+            [FromQuery(Name = "address")]  string? address*/
+            [FromBody]CreateNewPostPostRequestObject createNewPostPostRequestObject)
+        {
+            string postType = createNewPostPostRequestObject.PostType;
+            string postTitle = createNewPostPostRequestObject.postTitle;
+            string postBody = createNewPostPostRequestObject.postBody;
+            DateTime createDate = createNewPostPostRequestObject.createDate;
+            int creatorUID = createNewPostPostRequestObject.creatorUID;
+            string? email = createNewPostPostRequestObject.email;
+            string? phoneNumber = createNewPostPostRequestObject.phoneNumber;
+            string? address = createNewPostPostRequestObject.address;
+            try
+            {
+                postService.InsertNewPost(postType, postTitle, postBody, 
+                    createDate, creatorUID, email, phoneNumber, address);
+                return Ok();
+            }
+            catch (InvalidTypeException ex)
+            {
+                return this.BadRequest($"[Invalid Type Error]: {ex.Message}");
+            }
+            catch (SqlException ex)
+            {
+                return this.BadRequest($"[SQL Query Error]: {ex.Message}");
+            }
+        }
+
     }
 }
