@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using System.Data;
 using System.Data.SqlClient;
 using UniLife_Backend_CPSC304_Proj.Services;
+using UniLife_Backend_CPSC304_Proj.Models;
 using UniLife_Backend_CPSC304_Proj.Utils;
+using UniLife_Backend_CPSC304_Proj.Exceptions;
 
 namespace UniLife_Backend_CPSC304_Proj.Controllers
 {
@@ -11,50 +13,93 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
     [ApiController]
     public class AccountsController : ControllerBase
     {
+        internal class AccountType
+        {
+            public const string UserAccount = "UserAccount";
+            public const string BusinessAccount = "BusinessAccount";
+            public const string AdminAccount = "AdminAccount";
+        }
 
         private readonly IDbConnection dbConnection;
+        private readonly AccountService accountService;
 
-        public AccountsController(IDbConnection connection)
+        public AccountsController(IDbConnection connection, AccountService accountService)
         {
-
             dbConnection = connection;
+            this.accountService = accountService;
         }
 
-
-
-/*      
- *      These are just test Steve implemented when setting up the server. 
- *      For whoever is doing these do not get influenced.
- *      
-        [Route("Accounts")]
-        [HttpGet]
-        public IEnumerable<string> GetAccounts()
+        [HttpPost]
+        public ActionResult CreateNewAccount([FromBody] CreateNewAccountRequestObj createNewAccountRequestObj)
         {
-            List<string> result = new List<string>();
-
-            string query = @"SELECT Username from [dbo].[Account]";
-
-            result = QueryHandler.SqlQueryFromConnection<string>(query, x => (string)x[0], dbConnection);
-
-            return result;
-        }
-
-        [Route("AddAccount")]
-        [HttpGet]
-        public IActionResult AddAccount(int aid)
-        {
-            string query = "INSERT [dbo].Account([AID], Username, Email, [Password])"
-                + " VALUES(3, 'User3', 'User3@gmail.com', 'user3'); ";
-
             try
             {
-                QueryHandler.SqlExecutionQueryFromConnection(query, dbConnection);
-                return CreatedAtAction(nameof(AddAccount), new { aid = aid });
+                accountService.CreateNewAccount(
+                    createNewAccountRequestObj.AccountType,
+                    createNewAccountRequestObj.Username,
+                    createNewAccountRequestObj.Password,
+                    createNewAccountRequestObj.Email);
+                return Ok();
+            }
+            catch (InvalidTypeException ex)
+            {
+                return BadRequest($"[Invalid Type Error]: {ex.Message}");
             }
             catch (SqlException ex)
             {
-                return this.BadRequest(ex.Message);
+                return this.BadRequest($"[SQL Query Error]: {ex.Message}");
             }
-        }*/
+        }
+
+        [HttpDelete]
+        public ActionResult DeleteAccount([FromBody] int aid)
+        {
+            try
+            {
+                accountService.DeleteAccount(aid);
+                return Ok();
+            }
+            catch (SqlException ex)
+            {
+                return this.BadRequest($"[SQL Query Error]: {ex.Message}");
+            }
+        }
+
+        [HttpPut]
+        public ActionResult UpdateAccount([FromBody] UpdateAccountRequestObj updateAccountRequestObj)
+        {
+            try
+            {
+                accountService.updatePost(
+                    updateAccountRequestObj.Aid,
+                    updateAccountRequestObj.username,
+                    updateAccountRequestObj.password,
+                    updateAccountRequestObj.email);
+                return Ok();
+            }
+            catch (SqlException ex)
+            {
+                return this.BadRequest($"[SQL Query Error]: {ex.Message}");
+            }
+            catch (NonExistingObjectException ex)
+            {
+                return this.BadRequest($"[Non-Existing Object]: {ex.Message}");
+            }
+        }
+        /*
+        // Getting all accounts in group
+        [HttpGet]
+        public ActionResult<List<AccountModel>> GetAccountsinGroup()
+        {
+            try
+            {
+                return accountService.GetAccountsinGroup();
+            }
+            catch (SqlException ex)
+            {
+                return this.BadRequest($"[SQL Query Error]: {ex.Message}");
+            }
+        }
+        */
     }
 }
