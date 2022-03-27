@@ -10,30 +10,27 @@ using UniLife_Backend_CPSC304_Proj.Utils;
 
 namespace UniLife_Backend_CPSC304_Proj.Controllers
 {
-    // www.here.com/api/posts
+    // www.server.com/api/posts
     [Route("api/[controller]")]
     [ApiController]
     public class PostsController : ControllerBase
     {
-
         internal class PostType
         {
-
             public const string SellingPost =  "SellingPost";
             public const string HousingPost = "HousingPost"; 
             public const string SocialMediaPost = "SocialMediaPost";
-
         }
 
         private readonly IDbConnection dbConnection;
         private readonly PostService postService;
-
 
         public PostsController(IDbConnection connection, PostService postService)
         {
             dbConnection = connection;
             this.postService = postService;
         }
+
 
         [HttpGet]
         public ActionResult<List<PostModel>> GetAllPosts() {
@@ -50,12 +47,14 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
         }
 
 
+        // www.server.com/api/posts/Type/xxxx?  
         [HttpGet("Type/{postType}")]
-        public ActionResult<List<PostModel>> GetPosts(string postType) {
+        public ActionResult<List<PostModel>> GetPosts(string postType, PostModel.OrderByValue? orderBy, bool? asc) {
             try
             {
-                return postService.GetPostsByType(postType);
-
+                return postService.GetPostsByType(postType,
+                    orderBy ?? PostModel.OrderByValue.CreatedDate,
+                    asc ?? false);
             } 
             catch(InvalidTypeException ex)
             {
@@ -65,92 +64,126 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
             {
                 return this.BadRequest($"[SQL Query Error]: {ex.Message}");
             }
-            /*string query = "";
-            Func<DbDataReader, PostModel> mapFunction;
+        }
 
-            if (postType.ToLower().Equals( PostType.SellingPost.ToLower()))
-            {
-                query = @"SELECT P.pid, title, [Create_Date], [Post_Body], [Num_Likes], "+
-                                    "[Num_Dislikes], [Creator_UID], [Email], Phone_Num " +
-                                    "from [dbo].[Post] P, [dbo].[Selling_Post] SP " +
-                                    "where P.PID = SP.PID";
-                mapFunction = (x) =>
-                {
-                    PostModel p = new PostModel();
-                    p.Pid = (int)x[0];
-                    p.Title = (string)x[1];
-                    p.CreatedDate = (DateTime)x[2];
-                    p.PostBody = (string)x[3];
-                    p.NumLikes = (int)x[4];
-                    p.NumDislikes = (int)x[5];
-                    p.CreatorAid = (int)x[6];
-                    p.Email = (string)x[7];
-                    p.PhoneNum = Convert.ToString(x[8]);
-                    return p;
-                };
-            }
-            else if (postType.ToLower().Equals(PostType.HousingPost.ToLower()))
-            {
-                query = @"SELECT P.pid, title, [Create_Date], [Post_Body], [Num_Likes], [Num_Dislikes], [Creator_UID], [Email], [Address] "+
-                        "from [dbo].[Post] P, [dbo].[Housing_Post] SP "+
-                        "where P.PID = SP.PID";
-                mapFunction = (x) =>
-                {
-                    PostModel p = new PostModel();
-                    p.Pid = (int)x[0];
-                    p.Title = (string)x[1];
-                    p.CreatedDate = (DateTime)x[2];
-                    p.PostBody = (string)x[3];
-                    p.NumLikes = (int)x[4];
-                    p.NumDislikes = (int)x[5];
-                    p.CreatorAid = (int)x[6];
-                    p.Email = (string)x[7];
-                    p.Address = (string)x[8];
-                    return p;
-                };
-            }
-            else if (postType.ToLower().Equals(PostType.SocialMediaPost.ToLower()))
-            {
-                query = @"SELECT P.pid, title, [Create_Date], [Post_Body], [Num_Likes], [Num_Dislikes], [Creator_UID] "+
-                        "from [dbo].[Post] P, [dbo].[Social_Media_Post] SP "+
-                        "where P.PID = SP.PID";
-                mapFunction = (x) =>
-                {
-                    PostModel p = new PostModel();
-                    p.Pid = (int)x[0];
-                    p.Title = (string)x[1];
-                    p.CreatedDate = (DateTime)x[2];
-                    p.PostBody = (string)x[3];
-                    p.NumLikes = (int)x[4];
-                    p.NumDislikes = (int)x[5];
-                    p.CreatorAid = (int)x[6];
-                    return p;
-                };
-            }
-            else
-            {
-                return this.BadRequest($"Invalid post type. Expected types: " +
-                        $"<{PostType.HousingPost}>, <{PostType.SellingPost}> and <{PostType.SocialMediaPost}>." +
-                        $"But received <{postType}> instead.");
-            }
-                    
+        [HttpGet("SerachTitle/{postType}")]
+        public ActionResult<List<PostModel>> GetPostBySerachTitle(string postType, string title,
+            PostModel.OrderByValue? orderBy, bool? asc)
+        {
             try
             {
-                List<PostModel> posts = QueryHandler.SqlQueryFromConnection<PostModel>(query,
-                                            mapFunction,
-                                            dbConnection);
-                return posts;
+                return postService.SearchPostsType(postType, title, 
+                    orderBy ?? PostModel.OrderByValue.CreatedDate, 
+                    asc ?? false);
+            }
+            catch (InvalidTypeException ex)
+            {
+                return this.BadRequest($"[Invalid Type Error]: {ex.Message}");
             }
             catch (SqlException ex)
             {
                 return this.BadRequest($"[SQL Query Error]: {ex.Message}");
-                // return this.Problem(detail:ex.Message,title:"SQL Query Error");
-            }*/
+            }
         }
 
+        [HttpGet("Categories")]
+        public ActionResult<List<PostModel>> GetPostByCategories(string postType,
+            [FromQuery(Name = "category")] string[] categories,
+            PostModel.OrderByValue? orderBy, bool? asc
+            /*[FromBody] PostByCategoriesRequestObject postByCategoriesRequestObject*/)
+        {   
+            try
+            {
+                /*string postType = postByCategoriesRequestObject.PostType;
+                string[] categories = postByCategoriesRequestObject.Categories;
+                PostModel.OrderByValue? orderBy = postByCategoriesRequestObject.OrderBy;
+                bool? asc = postByCategoriesRequestObject.Asc;*/
+                return postService.GetPostsWithAllCategories(postType, categories,
+                    orderBy ?? PostModel.OrderByValue.CreatedDate,
+                    asc ?? false);
+            }
+            catch (InvalidTypeException ex)
+            {
+                return this.BadRequest($"[Invalid Type Error]: {ex.Message}");
+            }
+            catch (SqlException ex)
+            {
+                return this.BadRequest($"[SQL Query Error]: {ex.Message}");
+            }
+        }
 
+        [HttpPost]
+        public ActionResult CreateNewPost(/*string postType,
+            [FromQuery(Name = "title")] string postTitle,
+            [FromQuery(Name = "body")] string postBody,
+            [FromQuery(Name = "date")] DateTime createDate,
+            [FromQuery(Name = "UID")]  int creatorUID,
+            [FromQuery(Name = "email")]  string? email,
+            [FromQuery(Name = "phoneNumber")]  string? phoneNumber,
+            [FromQuery(Name = "address")]  string? address*/
+            [FromBody]CreateNewPostPostRequestObject createNewPostPostRequestObject)
+        {
+            string postType = createNewPostPostRequestObject.PostType;
+            string postTitle = createNewPostPostRequestObject.postTitle;
+            string postBody = createNewPostPostRequestObject.postBody;
+            DateTime createDate = createNewPostPostRequestObject.createDate;
+            int creatorUID = createNewPostPostRequestObject.creatorUID;
+            string? email = createNewPostPostRequestObject.email;
+            string? phoneNumber = createNewPostPostRequestObject.phoneNumber;
+            string? address = createNewPostPostRequestObject.address;
+            try
+            {
+                postService.InsertNewPost(postType, postTitle, postBody, 
+                    createDate, creatorUID, email, phoneNumber, address);
+                return Ok();
+            }
+            catch (InvalidTypeException ex)
+            {
+                return this.BadRequest($"[Invalid Type Error]: {ex.Message}");
+            }
+            catch (SqlException ex)
+            {
+                return this.BadRequest($"[SQL Query Error]: {ex.Message}");
+            }
+        }
+
+        [HttpDelete]
+        public ActionResult DeletePost([FromBody] int pid)
+        {
+            try
+            {
+                postService.DeletePost(pid);
+                return Ok();
+            }
+            catch (SqlException ex)
+            {
+                return this.BadRequest($"[SQL Query Error]: {ex.Message}");
+            }
+        }
+
+        [HttpPut]
+        public ActionResult UpdatePost([FromBody] UpdatePostPutRequestObject updatePostPutRequestObject)
+        {
+            try
+            {
+                postService.UpdatePost(
+                    updatePostPutRequestObject.pid,
+                    updatePostPutRequestObject.postTitle,
+                    updatePostPutRequestObject.postBody,
+                    updatePostPutRequestObject.email,
+                    updatePostPutRequestObject.phoneNumber,
+                    updatePostPutRequestObject.address);
+                return Ok();
+            }
+            catch (SqlException ex)
+            {
+                return this.BadRequest($"[SQL Query Error]: {ex.Message}");
+            }
+            catch (NonExistingObjectException ex)
+            {
+                return this.BadRequest($"[Non-Existing Object]: {ex.Message}");
+            }
+        }
 
     }
-
-    
 }

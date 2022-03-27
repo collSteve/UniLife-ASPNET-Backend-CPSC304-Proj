@@ -54,6 +54,10 @@ namespace UniLife_Backend_CPSC304_Proj.Utils
             }
 
         }
+        public static List<T> SqlQueryFromConnection<T>(SelectionQueryObject<T> sQuery, IDbConnection connection)
+        {
+            return SqlQueryFromConnection(sQuery.SqlQuery(), sQuery.QueryMapFunction, connection);
+        }
 
         public static int SqlExecutionQueryFromConnection(string query, IDbConnection connection)
         {
