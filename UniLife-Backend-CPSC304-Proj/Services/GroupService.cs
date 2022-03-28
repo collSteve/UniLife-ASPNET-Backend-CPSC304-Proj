@@ -42,7 +42,7 @@ namespace UniLife_Backend_CPSC304_Proj.Services
             string query = @"INSERT INTO [dbo].[Group]([Gid], [Group_Name])"  +
                             $"VALUES ('{Gid}', '{GroupName}'";
 
-           QueryHandler.SqlExecutionQueryFromConnection(query, dbConnection);
+            QueryHandler.SqlExecutionQueryFromConnection(query, dbConnection);
         }
 
         //delete group given gid

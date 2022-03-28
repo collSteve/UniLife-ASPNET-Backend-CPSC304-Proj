@@ -440,7 +440,6 @@ namespace UniLife_Backend_CPSC304_Proj.Services
 
             }
 
-
             // update type specific table
             List<string> typeSetClauses = new List<string>();
             string? updateTypePostQuery = null;
@@ -463,7 +462,6 @@ namespace UniLife_Backend_CPSC304_Proj.Services
                         string typeSetClause = String.Join(", ", typeSetClauses.ToArray());
 
                         updateTypePostQuery = $"UPDATE [dbo].Housing_Post SET {typeSetClause} WHERE pid={pid}";
-
 
                         break;
                     }

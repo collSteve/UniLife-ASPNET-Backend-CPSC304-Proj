@@ -70,11 +70,11 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
         {
             try
             {
-                accountService.updatePost(
+                /*accountService.UpdatePost(
                     updateAccountRequestObj.Aid,
                     updateAccountRequestObj.username,
                     updateAccountRequestObj.password,
-                    updateAccountRequestObj.email);
+                    updateAccountRequestObj.email);*/
                 return Ok();
             }
             catch (SqlException ex)
