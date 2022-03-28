@@ -67,4 +67,11 @@ namespace UniLife_Backend_CPSC304_Proj.Models
         public string? phoneNumber { get; set; }
         public string? address { get; set; }
     }
+
+    public class CreateCommentPostRequestObject
+    {
+        public int pid { get; set; }
+        public int creatorUid { get; set; }
+        public string commentBody { get; set; }
+    }
 }

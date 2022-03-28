@@ -490,5 +490,24 @@ namespace UniLife_Backend_CPSC304_Proj.Services
             return null;
         }
 
+        public void CreateComment(int pid, int creatorUid, string commentBody)
+        {
+            // generate cid
+            string hashString = $"{pid}{creatorUid}{commentBody}";
+            MD5 md5Hasher = MD5.Create();
+            byte[] hashed = md5Hasher.ComputeHash(Encoding.UTF8.GetBytes(hashString));
+            int cid = BitConverter.ToInt32(hashed, 0);
+
+            string commentQueryString = "INSERT [dbo].Comment([CID], [Comment_Body], [Creator_UID], [PID]) " +
+            $"VALUES({cid}, '{commentBody}', {creatorUid}, {pid})";
+
+            QueryHandler.SqlExecutionQueryFromConnection(commentQueryString, dbConnection);
+        }
+
+        public void DeleteComment(int cid)
+        {
+            string deleteQuery = $"DELETE FROM [dbo].Comment WHERE cid={cid}";
+            QueryHandler.SqlExecutionQueryFromConnection(deleteQuery, dbConnection);
+        }
     }
 }

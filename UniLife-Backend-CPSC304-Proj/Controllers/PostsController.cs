@@ -186,5 +186,36 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
                 return this.BadRequest($"[Non-Existing Object]: {ex.Message}");
             }
         }
+
+        [HttpPost("Comment")]
+        public ActionResult CreateComment([FromBody] CreateCommentPostRequestObject createCommentPostRequest)
+        {
+            try
+            {
+                postService.CreateComment(
+                    createCommentPostRequest.pid,
+                    createCommentPostRequest.creatorUid,
+                    createCommentPostRequest.commentBody);
+                return Ok();
+            }
+            catch (SqlException ex)
+            {
+                return this.BadRequest($"[SQL Query Error]: {ex.Message}");
+            }
+        }
+
+        [HttpDelete("Comment")]
+        public ActionResult DeleteComment([FromBody] int cid)
+        {
+            try
+            {
+                postService.DeleteComment(cid);
+                return Ok();
+            }
+            catch (SqlException ex)
+            {
+                return this.BadRequest($"[SQL Query Error]: {ex.Message}");
+            }
+        }
     }
 }
