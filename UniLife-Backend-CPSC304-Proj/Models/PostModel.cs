@@ -61,6 +61,8 @@ namespace UniLife_Backend_CPSC304_Proj.Models
         public int pid { get; set; }
         public string? postTitle { get; set; }
         public string? postBody { get; set; }
+        public int? numLikes { get; set; }
+        public int? numDislikes { get; set; }
         public string? email { get; set; }
         public string? phoneNumber { get; set; }
         public string? address { get; set; }

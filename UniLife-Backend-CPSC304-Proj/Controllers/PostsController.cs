@@ -170,6 +170,8 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
                     updatePostPutRequestObject.pid,
                     updatePostPutRequestObject.postTitle,
                     updatePostPutRequestObject.postBody,
+                    updatePostPutRequestObject.numLikes,
+                    updatePostPutRequestObject.numDislikes,
                     updatePostPutRequestObject.email,
                     updatePostPutRequestObject.phoneNumber,
                     updatePostPutRequestObject.address);
@@ -184,6 +186,5 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
                 return this.BadRequest($"[Non-Existing Object]: {ex.Message}");
             }
         }
-
     }
 }

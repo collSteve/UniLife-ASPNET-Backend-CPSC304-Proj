@@ -421,6 +421,7 @@ namespace UniLife_Backend_CPSC304_Proj.Services
         }
 
         public void UpdatePost(int pid, string? postTitle, string? postBody,
+            int? numLikes, int? numDisLikes,
             string? email, string? phoneNumber, string? address)
         {
             string postType = DeterminePostType(pid)?? 
@@ -430,14 +431,14 @@ namespace UniLife_Backend_CPSC304_Proj.Services
             List<string> setClauses = new List<string>();
             if (postTitle != null) setClauses.Add($"title = '{postTitle}'");
             if (postBody != null) setClauses.Add($"Post_Body = '{postBody}'");
-
+            if (numLikes != null && numLikes >= 0) setClauses.Add($"Num_Likes = {numLikes}");
+            if (numDisLikes != null && numDisLikes >= 0) setClauses.Add($"Num_Dislikes = {numDisLikes}");
 
             if (setClauses.Count > 0)
             {
                 string setClause = String.Join(", ", setClauses.ToArray());
                 string updatePostQuery = $"UPDATE [dbo].Post SET {setClause} WHERE pid={pid}";
                 QueryHandler.SqlExecutionQueryFromConnection(updatePostQuery, dbConnection);
-
             }
 
 
@@ -463,8 +464,6 @@ namespace UniLife_Backend_CPSC304_Proj.Services
                         string typeSetClause = String.Join(", ", typeSetClauses.ToArray());
 
                         updateTypePostQuery = $"UPDATE [dbo].Housing_Post SET {typeSetClause} WHERE pid={pid}";
-
-
                         break;
                     }
                     
@@ -490,5 +489,6 @@ namespace UniLife_Backend_CPSC304_Proj.Services
             if (socialMedia > 0) return PostType.SocialMediaPost;
             return null;
         }
+
     }
 }
