@@ -89,6 +89,14 @@ namespace UniLife_Backend_CPSC304_Proj.Services
         {
 
         }
+        public void JoinGroup(int aid, int gid, string role) {
+
+            string query = @"INSERT INTO [dbo].[Member_Of]([AID], [GID], [Role])" + 
+                $"VALUES ({aid}, {gid}, '{role}')";
+            QueryHandler.SqlExecutionQueryFromConnection(query, dbConnection);
+        }
+
+
         /*
         public List<AccountModel> GetAccountsinGroup()
         {

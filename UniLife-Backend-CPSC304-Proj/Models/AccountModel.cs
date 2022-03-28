@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
+using System.ComponentModel.DataAnnotations;
 namespace UniLife_Backend_CPSC304_Proj.Models
 {
     public class AccountModel
@@ -25,6 +26,12 @@ namespace UniLife_Backend_CPSC304_Proj.Models
         public string Email { get; set; }
     }
 
+    public class accGroupObj
+    {
+        public int AID { get; set; }
+        public int GID { get; set; }
+        public string Role { get; set; }
+    }
     public class UpdateAccountRequestObj
     {
         public int Aid { get; set; }

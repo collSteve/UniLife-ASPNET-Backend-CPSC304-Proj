@@ -42,16 +42,16 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
 
         }
         // www.server.com/api/Group/create
-        [HttpGet("create")]
+        [HttpPost]
+        public ActionResult CreateGroup([FromBody]GroupNewObj gno) {
 
-        public ActionResult CreateGroup(GroupNewObj gno) {
-
-            int Gid = gno.Gid;
+   
             string groupName = gno.GroupName;
+            int Aid = gno.Aid;
 
             try
             {
-               groupService.CreateGroup(Gid, groupName);
+               groupService.CreateGroup(groupName, Aid);
                 return Ok();
 
             }
@@ -63,7 +63,7 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
         }
 
         // www.server.com/api/Group/delete
-        [HttpGet("delete")]
+        [HttpDelete]
 
         public ActionResult DeleteGroup(int Gid)
         {
@@ -112,6 +112,36 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
             }
 
         }
+
+        [HttpPut]
+        public ActionResult updateName(GroupUpdateObj obj) {
+
+            string name = obj.name;
+            int gid = obj.Gid;
+
+            try {
+                groupService.updateGroupName(name, gid);
+                return Ok();
+            }
+            catch (SqlException ex)
+            {
+                return this.BadRequest($"[SQL Query Error]: {ex.Message}");
+            }
+        }
+
+        [HttpGet("Members/{Gid}")]
+        public ActionResult<int> getMemberCount(int Gid) {
+
+            try
+            {
+                return groupService.getMemberCount(Gid);
+            }
+            catch (SqlException ex)
+            {
+                return this.BadRequest($"[SQL Query Error]: {ex.Message}");
+            }
+        }    
+
     }
 }
 

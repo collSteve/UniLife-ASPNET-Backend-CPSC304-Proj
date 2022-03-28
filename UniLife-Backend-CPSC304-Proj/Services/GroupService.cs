@@ -1,10 +1,11 @@
 ﻿using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
+using System.Security.Cryptography;
+using System.Text;
 using UniLife_Backend_CPSC304_Proj.Exceptions;
 using UniLife_Backend_CPSC304_Proj.Models;
 using UniLife_Backend_CPSC304_Proj.Utils;
-
 namespace UniLife_Backend_CPSC304_Proj.Services
 {
     public class GroupService
@@ -37,17 +38,35 @@ namespace UniLife_Backend_CPSC304_Proj.Services
         }
 
         //inserts new group
-        public void CreateGroup(int Gid, string GroupName)
+        public void CreateGroup(string GroupName, int Aid)
         {
-            string query = @"INSERT INTO [dbo].[Group]([Gid], [Group_Name])"  +
-                            $"VALUES ('{Gid}', '{GroupName}'";
 
-           QueryHandler.SqlExecutionQueryFromConnection(query, dbConnection);
+            string hashString = $"{GroupName}{Aid}";
+            MD5 md5Hasher = MD5.Create();
+            byte[] hashed = md5Hasher.ComputeHash(Encoding.UTF8.GetBytes(hashString));
+            int generatedGID = BitConverter.ToInt32(hashed, 0);
+
+           
+
+            string query = @"INSERT INTO [dbo].[Group]([Gid], [Group_Name])"  +
+                            $"VALUES ({generatedGID}, '{GroupName}')";
+
+            string squery = @"INSERT INTO [dbo].[Member_Of]([AID], [GID], [Role])" +
+                $"VALUES ({Aid},{generatedGID}, 'admin')";
+
+            try
+            {
+                QueryHandler.SqlExecutionQueryFromConnection(query, dbConnection);
+                QueryHandler.SqlExecutionQueryFromConnection(squery, dbConnection);
+            }catch(SqlException s) {
+                DeleteGroup(generatedGID);
+            }
         }
 
         //delete group given gid
         public void DeleteGroup(int Gid) {
             string query = @"DELETE FROM [dbo].[Group] WHERE [Gid]=" + Gid;
+            QueryHandler.SqlExecutionQueryFromConnection(query, dbConnection);
         }
 
         //categories not an attribute yet
@@ -77,12 +96,11 @@ namespace UniLife_Backend_CPSC304_Proj.Services
         {
             string query = @"SELECT [Group_Name]" +
                         "from [dbo].[Group]" +
-                        "where [Group_Name] like '%{name}%'";
+                        $"where [Group_Name] like '%{name}%'";
             Func<DbDataReader, GroupModel> mapFunction = (x) =>
             {
                 GroupModel g = new GroupModel();
-                g.Gid = (int)x[0];
-                g.GroupName = (string)x[1];
+                g.GroupName = (string)x[0];
 
                 return g;
             };
@@ -90,6 +108,33 @@ namespace UniLife_Backend_CPSC304_Proj.Services
             return QueryHandler.SqlQueryFromConnection<GroupModel>(query,
                                         mapFunction,
                                         dbConnection);
+        }
+
+        public void updateGroupName(string name, int Gid) {
+            string query = @"UPDATE [dbo].[Group]" +
+                $"SET [Group_Name] = '{name}'" +
+                $"WHERE [Gid] = {Gid}";
+
+            if (name != "") { 
+                QueryHandler.SqlExecutionQueryFromConnection(query, dbConnection);
+            }
+        }
+
+        public int getMemberCount(int Gid)
+        {
+            string query = @"SELECT COUNT([AID])" +
+                $"FROM [dbo].[Member_Of]" +
+                $"WHERE [Gid] = {Gid}";
+
+            Func<DbDataReader, GroupModel> mapFunction = (x) =>
+            {
+                GroupModel g = new GroupModel();
+                g.MemberCount = (int)x[0];
+                return g;
+            };
+
+            List<GroupModel> groupL = QueryHandler.SqlQueryFromConnection(query, mapFunction, dbConnection);
+            return groupL[0].MemberCount;
         }
 
     }
