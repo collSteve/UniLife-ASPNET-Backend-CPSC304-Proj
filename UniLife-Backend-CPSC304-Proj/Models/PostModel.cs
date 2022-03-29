@@ -74,4 +74,10 @@ namespace UniLife_Backend_CPSC304_Proj.Models
         public int creatorUid { get; set; }
         public string commentBody { get; set; }
     }
+
+    public class NumberPostByUniversityObject
+    {
+        public string UniversityName { get; set; }
+        public int NumberOfPosts { get; set; }
+    }
 }

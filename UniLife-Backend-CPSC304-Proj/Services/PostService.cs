@@ -43,8 +43,8 @@ namespace UniLife_Backend_CPSC304_Proj.Services
         /*
          * Throws: InvalidTypeException, SqlException
          */
-        public List<PostModel> GetPostsByType(string postType, 
-            PostModel.OrderByValue orderBy = PostModel.OrderByValue.CreatedDate, 
+        public List<PostModel> GetPostsByType(string postType,
+            PostModel.OrderByValue orderBy = PostModel.OrderByValue.CreatedDate,
             bool asc = false)
         {
             #region c4
@@ -85,7 +85,7 @@ namespace UniLife_Backend_CPSC304_Proj.Services
                         $"But received <{order}> instead");
             }
         }
-        
+
         private SelectionQueryObject<PostModel> GetAllSellingPostsQuery(PostModel.OrderByValue orderBy = PostModel.OrderByValue.CreatedDate, bool asc = false)
         {
 
@@ -174,7 +174,7 @@ namespace UniLife_Backend_CPSC304_Proj.Services
                 .SetIsAscending(asc)
                 .SetIsDistinct(true);
 
-            return sQuery; 
+            return sQuery;
         }
 
         public SelectionQueryObject<PostModel> GetPostsByTypeQuery(string postType,
@@ -308,9 +308,9 @@ namespace UniLife_Backend_CPSC304_Proj.Services
             return QueryHandler.SqlQueryFromConnection<PostModel>(sQuery, dbConnection);
         }
 
-        public List<PostModel> SearchPostsType(string postType, 
+        public List<PostModel> SearchPostsType(string postType,
             string title,
-            PostModel.OrderByValue orderBy = PostModel.OrderByValue.CreatedDate, 
+            PostModel.OrderByValue orderBy = PostModel.OrderByValue.CreatedDate,
             bool asc = false)
         {
             SelectionQueryObject<PostModel> sQuery = GetPostsByTypeQuery(postType, orderBy, asc);
@@ -320,7 +320,7 @@ namespace UniLife_Backend_CPSC304_Proj.Services
             return QueryHandler.SqlQueryFromConnection<PostModel>(sQuery, dbConnection);
         }
 
-        public List<PostModel> GetPostsWithAllCategories(string postType, 
+        public List<PostModel> GetPostsWithAllCategories(string postType,
             string[] categories,
             PostModel.OrderByValue orderBy = PostModel.OrderByValue.CreatedDate,
             bool asc = false)
@@ -386,7 +386,7 @@ namespace UniLife_Backend_CPSC304_Proj.Services
 
 
 
-        public void InsertNewPost(string postType, string postTitle, string postBody, 
+        public void InsertNewPost(string postType, string postTitle, string postBody,
             DateTime createDate, int creatorUID, string? email, string? phoneNumber, string? address)
         {
             // generate pid by hashing
@@ -420,7 +420,7 @@ namespace UniLife_Backend_CPSC304_Proj.Services
             }
         }
 
-        private string GetInsertQueryForPostTypes(string postType, int pid, 
+        private string GetInsertQueryForPostTypes(string postType, int pid,
             string? email, string? phoneNumber, string? address)
         {
             string query = "";
@@ -458,7 +458,7 @@ namespace UniLife_Backend_CPSC304_Proj.Services
             int? numLikes, int? numDisLikes,
             string? email, string? phoneNumber, string? address)
         {
-            string postType = DeterminePostType(pid)?? 
+            string postType = DeterminePostType(pid) ??
                 throw new NonExistingObjectException($"Post with PID {pid} does not exist.");
 
             // update post table
@@ -490,7 +490,7 @@ namespace UniLife_Backend_CPSC304_Proj.Services
                         updateTypePostQuery = $"UPDATE [dbo].Selling_Post SET {typeSetClause} WHERE pid={pid}";
                         break;
                     }
-                    
+
                 case PostType.HousingPost:
                     {
                         if (email != null) typeSetClauses.Add($"email = '{email}'");
@@ -500,10 +500,10 @@ namespace UniLife_Backend_CPSC304_Proj.Services
                         updateTypePostQuery = $"UPDATE [dbo].Housing_Post SET {typeSetClause} WHERE pid={pid}";
                         break;
                     }
-                    
+
             }
 
-            if (updateTypePostQuery != null && typeSetClauses.Count>0)
+            if (updateTypePostQuery != null && typeSetClauses.Count > 0)
                 QueryHandler.SqlExecutionQueryFromConnection(updateTypePostQuery, dbConnection);
         }
 
@@ -511,8 +511,8 @@ namespace UniLife_Backend_CPSC304_Proj.Services
         {
             var numPostQuery = (string s, int id) => $"Select Count(pid) from [dbo].{s} where pid={id}";
 
-           int selling = QueryHandler.SqlQueryFromConnection<int>(numPostQuery("Selling_Post", pid), 
-                (s) => (int)s[0], dbConnection)[0];
+            int selling = QueryHandler.SqlQueryFromConnection<int>(numPostQuery("Selling_Post", pid),
+                 (s) => (int)s[0], dbConnection)[0];
             int housing = QueryHandler.SqlQueryFromConnection<int>(numPostQuery("Housing_Post", pid),
                 (s) => (int)s[0], dbConnection)[0];
             int socialMedia = QueryHandler.SqlQueryFromConnection<int>(numPostQuery("Social_Media_Post", pid),
@@ -551,7 +551,7 @@ namespace UniLife_Backend_CPSC304_Proj.Services
             if (categories.Length <= 0)
             {
                 sQuery = GetPostsByTypeQuery(postType);
-            } 
+            }
             else
             {
                 sQuery = GetPostsWithAllCategoriesQuery(postType, categories);
@@ -564,8 +564,25 @@ namespace UniLife_Backend_CPSC304_Proj.Services
             rQuery.OrderByClauseContent = null;
             Console.WriteLine(rQuery.SqlQuery());
 
-
             return QueryHandler.SqlQueryFromConnection(rQuery, dbConnection)[0];
+        }
+
+        public List<NumberPostByUniversityObject> GetNumberPostsInUniversity()
+        {
+            SelectionQueryObject<NumberPostByUniversityObject> sQuery =
+                new SelectionQueryObject<NumberPostByUniversityObject>((s) =>
+                {
+                    NumberPostByUniversityObject o = new NumberPostByUniversityObject();
+                    o.UniversityName = (string)s[0];
+                    o.NumberOfPosts = (int)s[1];
+                    return o;
+                });
+
+            sQuery.Select("UniName, Count(PID)")
+                .From("[dbo].University_Post")
+                .GroupBy("UniName");
+
+            return QueryHandler.SqlQueryFromConnection(sQuery, dbConnection);
         }
     }
 }
