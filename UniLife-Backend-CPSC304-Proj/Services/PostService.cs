@@ -347,10 +347,44 @@ namespace UniLife_Backend_CPSC304_Proj.Services
             sQuery.AddToWhereClause("and 0<(select Count(C.ctg_type) from Categories C " +
                 $"where {selectedCategoriesWhereClause})");
 
-            Console.WriteLine(sQuery.FormattedSqlQuery());
+            // Console.WriteLine(sQuery.FormattedSqlQuery());
 
             return QueryHandler.SqlQueryFromConnection(sQuery, dbConnection);
         }
+
+        private SelectionQueryObject<PostModel> GetPostsWithAllCategoriesQuery(string postType,
+            string[] categories,
+            PostModel.OrderByValue orderBy = PostModel.OrderByValue.CreatedDate,
+            bool asc = false)
+        {
+            SelectionQueryObject<PostModel> sQuery = GetPostsByTypeQuery(postType, orderBy, asc);
+
+            string[] selectedCategoriesWhereConditions = new string[categories.Length];
+
+
+            for (int i = 0; i < categories.Length; i++)
+            {
+                selectedCategoriesWhereConditions[i] = $"C.ctg_type='{categories[i]}'";
+            }
+
+            string selectedCategoriesWhereClause = String.Join(" or ", selectedCategoriesWhereConditions);
+
+            // Division: P / selectedCategories
+            sQuery.AddToWhereClause("and not exists (" +
+                $"(select C.ctg_type from Categories C where {selectedCategoriesWhereClause}) " +
+                "except " +
+                "(select PC.ctg_type from Post_category PC where P.PID = PC.PID) " +
+                ")");
+            // Make sure selected categories exist in the post_category
+            sQuery.AddToWhereClause("and 0<(select Count(C.ctg_type) from Categories C " +
+                $"where {selectedCategoriesWhereClause})");
+
+            // Console.WriteLine(sQuery.FormattedSqlQuery());
+
+            return sQuery;
+        }
+
+
 
         public void InsertNewPost(string postType, string postTitle, string postBody, 
             DateTime createDate, int creatorUID, string? email, string? phoneNumber, string? address)
@@ -508,6 +542,30 @@ namespace UniLife_Backend_CPSC304_Proj.Services
         {
             string deleteQuery = $"DELETE FROM [dbo].Comment WHERE cid={cid}";
             QueryHandler.SqlExecutionQueryFromConnection(deleteQuery, dbConnection);
+        }
+
+        public int GetNumberPostsInCategories(string postType, string[] categories)
+        {
+            SelectionQueryObject<PostModel> sQuery;
+
+            if (categories.Length <= 0)
+            {
+                sQuery = GetPostsByTypeQuery(postType);
+            } 
+            else
+            {
+                sQuery = GetPostsWithAllCategoriesQuery(postType, categories);
+
+            }
+
+            SelectionQueryObject<int> rQuery = sQuery.CloneTo<int>((s) => (int)s[0]);
+
+            rQuery.Select("Count(P.pid)");
+            rQuery.OrderByClauseContent = null;
+            Console.WriteLine(rQuery.SqlQuery());
+
+
+            return QueryHandler.SqlQueryFromConnection(rQuery, dbConnection)[0];
         }
     }
 }

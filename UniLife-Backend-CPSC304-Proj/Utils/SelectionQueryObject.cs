@@ -142,5 +142,18 @@ namespace UniLife_Backend_CPSC304_Proj.Utils
             return clone;
         }
 
+        public SelectionQueryObject<U> CloneTo<U>(Func<DbDataReader, U> newMapFunc)
+        {
+            SelectionQueryObject<U> clone = new SelectionQueryObject<U>(newMapFunc);
+            clone.SelectClauseContent = SelectClauseContent;
+            clone.FromClauseContent = FromClauseContent;
+            clone.WhereClauseContent = WhereClauseContent;
+            clone.GroupByClauseContent = GroupByClauseContent;
+            clone.HavingClauseContent = HavingClauseContent;
+            clone.OrderByClauseContent = OrderByClauseContent;
+            clone.IsAscending = IsAscending;
+            clone.IsDistinct = IsDistinct;
+            return clone;
+        }
     }
 }

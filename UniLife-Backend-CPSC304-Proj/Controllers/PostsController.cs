@@ -89,8 +89,7 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
         [HttpGet("Categories")]
         public ActionResult<List<PostModel>> GetPostByCategories(string postType,
             [FromQuery(Name = "category")] string[] categories,
-            PostModel.OrderByValue? orderBy, bool? asc
-            /*[FromBody] PostByCategoriesRequestObject postByCategoriesRequestObject*/)
+            PostModel.OrderByValue? orderBy, bool? asc)
         {   
             try
             {
@@ -113,14 +112,7 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
         }
 
         [HttpPost]
-        public ActionResult CreateNewPost(/*string postType,
-            [FromQuery(Name = "title")] string postTitle,
-            [FromQuery(Name = "body")] string postBody,
-            [FromQuery(Name = "date")] DateTime createDate,
-            [FromQuery(Name = "UID")]  int creatorUID,
-            [FromQuery(Name = "email")]  string? email,
-            [FromQuery(Name = "phoneNumber")]  string? phoneNumber,
-            [FromQuery(Name = "address")]  string? address*/
+        public ActionResult CreateNewPost(
             [FromBody]CreateNewPostPostRequestObject createNewPostPostRequestObject)
         {
             string postType = createNewPostPostRequestObject.PostType;
@@ -211,6 +203,25 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
             {
                 postService.DeleteComment(cid);
                 return Ok();
+            }
+            catch (SqlException ex)
+            {
+                return this.BadRequest($"[SQL Query Error]: {ex.Message}");
+            }
+        }
+
+        [HttpGet("Count/Category")]
+        public ActionResult<int> GetNumberPostsInCategories(string postType,
+            [FromQuery(Name = "category")] string[]? categories)
+        {
+            try
+            {
+                return postService.GetNumberPostsInCategories(postType, 
+                    categories?? Array.Empty<string>());
+            }
+            catch (InvalidTypeException ex)
+            {
+                return this.BadRequest($"[Invalid Type Error]: {ex.Message}");
             }
             catch (SqlException ex)
             {
