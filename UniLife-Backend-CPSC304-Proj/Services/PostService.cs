@@ -103,14 +103,15 @@ namespace UniLife_Backend_CPSC304_Proj.Services
                 p.CreatorAid = (int)x[6];
                 p.Email = (string)x[7];
                 p.PhoneNum = Convert.ToString(x[8]);
+                p.CreatorName = (string)x[9];
                 return p;
             };
 
             SelectionQueryObject<PostModel> sQuery = new SelectionQueryObject<PostModel>(mapFunction);
-            sQuery.Select("P.pid, title, [Create_Date], [Post_Body], [Num_Likes], "
-                            + "[Num_Dislikes], [Creator_UID], [Email], Phone_Num ")
-                .From("[dbo].[Post] P, [dbo].[Selling_Post] SP")
-                .Where("P.PID = SP.PID")
+            sQuery.Select("P.pid, title, P.[Create_Date], P.[Post_Body], P.[Num_Likes], "
+                            + "P.[Num_Dislikes], P.[Creator_UID], SP.[Email], SP.Phone_Num, A.[Username]")
+                .From("[dbo].[Post] P, [dbo].[Selling_Post] SP, [dbo].[Account] A")
+                .Where("P.PID = SP.PID and P.Creator_UID = A.AID")
                 .OrderBy(orderAttribute)
                 .SetIsAscending(asc)
                 .SetIsDistinct(true);
@@ -134,14 +135,15 @@ namespace UniLife_Backend_CPSC304_Proj.Services
                 p.CreatorAid = (int)x[6];
                 p.Email = (string)x[7];
                 p.Address = (string)x[8];
+                p.CreatorName = (string)x[9];
                 return p;
             };
 
             SelectionQueryObject<PostModel> sQuery = new SelectionQueryObject<PostModel>(mapFunction);
 
-            sQuery.Select("P.pid, title, [Create_Date], [Post_Body], [Num_Likes], [Num_Dislikes], [Creator_UID], [Email], [Address]")
-                .From("[dbo].[Post] P, [dbo].[Housing_Post] SP")
-                .Where("P.PID = SP.PID")
+            sQuery.Select("P.pid, P.title, P.[Create_Date], P.[Post_Body], P.[Num_Likes], P.[Num_Dislikes], [Creator_UID], SP.[Email], SP.[Address], A.[Username]")
+                .From("[dbo].[Post] P, [dbo].[Housing_Post] SP, [dbo].[Account] A")
+                .Where("P.PID = SP.PID and P.Creator_UID = A.AID")
                 .OrderBy(orderAttribute)
                 .SetIsAscending(asc)
                 .SetIsDistinct(true);
@@ -162,14 +164,15 @@ namespace UniLife_Backend_CPSC304_Proj.Services
                 p.NumLikes = (int)x[4];
                 p.NumDislikes = (int)x[5];
                 p.CreatorAid = (int)x[6];
+                p.CreatorName = (string)x[7];
                 return p;
             };
 
             SelectionQueryObject<PostModel> sQuery = new SelectionQueryObject<PostModel>(mapFunction);
 
-            sQuery.Select("P.pid, title, [Create_Date], [Post_Body], [Num_Likes], [Num_Dislikes], [Creator_UID]")
-                .From("[dbo].[Post] P, [dbo].[Social_Media_Post] SP")
-                .Where("P.PID = SP.PID")
+            sQuery.Select("P.pid, title, [Create_Date], [Post_Body], [Num_Likes], [Num_Dislikes], [Creator_UID], A.[Username]")
+                .From("[dbo].[Post] P, [dbo].[Social_Media_Post] SP, [dbo].[Account] A")
+                .Where("P.PID = SP.PID and P.Creator_UID = A.AID")
                 .OrderBy(orderAttribute)
                 .SetIsAscending(asc)
                 .SetIsDistinct(true);

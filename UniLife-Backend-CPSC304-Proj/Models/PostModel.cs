@@ -34,6 +34,7 @@ namespace UniLife_Backend_CPSC304_Proj.Models
         public string? Email { get; set; }
         public string? PhoneNum { get; set; }
         public string? Address { get; set; }
+        public string? CreatorName { get; set; }
     }
 
     public class CreateNewPostPostRequestObject
