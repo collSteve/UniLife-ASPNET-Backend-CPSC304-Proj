@@ -587,5 +587,18 @@ namespace UniLife_Backend_CPSC304_Proj.Services
 
             return QueryHandler.SqlQueryFromConnection(sQuery, dbConnection);
         }
+
+        public PostModel GetPostByPID(int pid)
+        {
+            string postType = DeterminePostType(pid) ??
+                throw new NonExistingObjectException($"Post with PID {pid} does not exist.");
+
+            SelectionQueryObject<PostModel> sQuery = GetPostsByTypeQuery(postType);
+
+            sQuery.AddToWhereClause($"and P.PID={pid}");
+
+            return QueryHandler.SqlQueryFromConnection(sQuery, dbConnection)[0];
+
+        }
     }
 }

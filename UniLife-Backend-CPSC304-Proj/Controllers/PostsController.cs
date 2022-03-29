@@ -17,8 +17,8 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
     {
         internal class PostType
         {
-            public const string SellingPost =  "SellingPost";
-            public const string HousingPost = "HousingPost"; 
+            public const string SellingPost = "SellingPost";
+            public const string HousingPost = "HousingPost";
             public const string SocialMediaPost = "SocialMediaPost";
         }
 
@@ -55,8 +55,8 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
                 return postService.GetPostsByType(postType,
                     orderBy ?? PostModel.OrderByValue.CreatedDate,
                     asc ?? false);
-            } 
-            catch(InvalidTypeException ex)
+            }
+            catch (InvalidTypeException ex)
             {
                 return this.BadRequest($"[Invalid Type Error]: {ex.Message}");
             }
@@ -72,8 +72,8 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
         {
             try
             {
-                return postService.SearchPostsType(postType, title, 
-                    orderBy ?? PostModel.OrderByValue.CreatedDate, 
+                return postService.SearchPostsType(postType, title,
+                    orderBy ?? PostModel.OrderByValue.CreatedDate,
                     asc ?? false);
             }
             catch (InvalidTypeException ex)
@@ -90,7 +90,7 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
         public ActionResult<List<PostModel>> GetPostByCategories(string postType,
             [FromQuery(Name = "category")] string[] categories,
             PostModel.OrderByValue? orderBy, bool? asc)
-        {   
+        {
             try
             {
                 /*string postType = postByCategoriesRequestObject.PostType;
@@ -113,7 +113,7 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
 
         [HttpPost]
         public ActionResult CreateNewPost(
-            [FromBody]CreateNewPostPostRequestObject createNewPostPostRequestObject)
+            [FromBody] CreateNewPostPostRequestObject createNewPostPostRequestObject)
         {
             string postType = createNewPostPostRequestObject.PostType;
             string postTitle = createNewPostPostRequestObject.postTitle;
@@ -125,7 +125,7 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
             string? address = createNewPostPostRequestObject.address;
             try
             {
-                postService.InsertNewPost(postType, postTitle, postBody, 
+                postService.InsertNewPost(postType, postTitle, postBody,
                     createDate, creatorUID, email, phoneNumber, address);
                 return Ok();
             }
@@ -216,8 +216,8 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
         {
             try
             {
-                return postService.GetNumberPostsInCategories(postType, 
-                    categories?? Array.Empty<string>());
+                return postService.GetNumberPostsInCategories(postType,
+                    categories ?? Array.Empty<string>());
             }
             catch (InvalidTypeException ex)
             {
@@ -241,5 +241,27 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
                 return this.BadRequest($"[SQL Query Error]: {ex.Message}");
             }
         }
+
+        [HttpGet("{pid}")]
+        public ActionResult<PostModel> GetPostByPid(int pid)
+        {
+            try
+            {
+                return postService.GetPostByPID(pid);
+            }
+            catch (InvalidTypeException ex)
+            {
+                return this.BadRequest($"[Invalid Type Error]: {ex.Message}");
+            }
+            catch (SqlException ex)
+            {
+                return this.BadRequest($"[SQL Query Error]: {ex.Message}");
+            }
+            catch (NonExistingObjectException ex)
+            {
+                return this.BadRequest($"[Non-Existing Object]: {ex.Message}");
+            }
+        }
+
     }
 }
