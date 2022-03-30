@@ -210,6 +210,9 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
             }
         }
 
+
+
+
         [HttpGet("Count/Category")]
         public ActionResult<int> GetNumberPostsInCategories(string postType,
             [FromQuery(Name = "category")] string[]? categories)
@@ -263,5 +266,25 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
             }
         }
 
+        [HttpGet("Comments/{pid}")]
+        public ActionResult<List<CommentModel>> GetCommentsByPid(int pid)
+        {
+            try
+            {
+                return postService.GetCommentsByPid(pid);
+            }
+            catch (InvalidTypeException ex)
+            {
+                return this.BadRequest($"[Invalid Type Error]: {ex.Message}");
+            }
+            catch (SqlException ex)
+            {
+                return this.BadRequest($"[SQL Query Error]: {ex.Message}");
+            }
+            catch (NonExistingObjectException ex)
+            {
+                return this.BadRequest($"[Non-Existing Object]: {ex.Message}");
+            }
+        }
     }
 }

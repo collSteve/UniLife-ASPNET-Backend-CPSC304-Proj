@@ -600,5 +600,24 @@ namespace UniLife_Backend_CPSC304_Proj.Services
             return QueryHandler.SqlQueryFromConnection(sQuery, dbConnection)[0];
 
         }
+
+        public List<CommentModel> GetCommentsByPid(int pid)
+        {
+            SelectionQueryObject<CommentModel> sQuery = new SelectionQueryObject<CommentModel>((s) => {
+                CommentModel comment = new CommentModel();
+                comment.cid = (int)s[0];
+                comment.pid = (int)s[1];
+                comment.commentBody = (string)s[2];
+                comment.creatorName = (string)s[3];
+                comment.creatorUid = (int)s[4];
+                return comment;
+            });
+
+            sQuery.Select("C.cid, C.PID, C.Comment_Body, A.Username, C.Creator_UID")
+                .From("[dbo].Comment C, [dbo].Account A")
+                .Where($"C.Creator_UID = A.AID and C.PID = {pid}");
+
+            return QueryHandler.SqlQueryFromConnection(sQuery, dbConnection);
+        }
     }
 }
