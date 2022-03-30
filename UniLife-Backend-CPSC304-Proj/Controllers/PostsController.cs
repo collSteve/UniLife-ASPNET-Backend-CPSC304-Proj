@@ -93,10 +93,6 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
         {
             try
             {
-                /*string postType = postByCategoriesRequestObject.PostType;
-                string[] categories = postByCategoriesRequestObject.Categories;
-                PostModel.OrderByValue? orderBy = postByCategoriesRequestObject.OrderBy;
-                bool? asc = postByCategoriesRequestObject.Asc;*/
                 return postService.GetPostsWithAllCategories(postType, categories,
                     orderBy ?? PostModel.OrderByValue.CreatedDate,
                     asc ?? false);
@@ -209,8 +205,6 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
                 return this.BadRequest($"[SQL Query Error]: {ex.Message}");
             }
         }
-
-
 
 
         [HttpGet("Count/Category")]
