@@ -94,13 +94,14 @@ namespace UniLife_Backend_CPSC304_Proj.Services
         //selects groups with groupnames containing name
         public List<GroupModel> getGroupByName(string name, bool? asc)
         {
-            string query = @"SELECT [Group_Name]" +
+            string query = @"SELECT [Gid],[Group_Name]" +
                         "from [dbo].[Group]" +
                         $"where [Group_Name] like '%{name}%'";
             Func<DbDataReader, GroupModel> mapFunction = (x) =>
             {
                 GroupModel g = new GroupModel();
-                g.GroupName = (string)x[0];
+                g.Gid = (int)x[0];
+                g.GroupName = (string)x[1];
 
                 return g;
             };
@@ -129,13 +130,16 @@ namespace UniLife_Backend_CPSC304_Proj.Services
             Func<DbDataReader, GroupModel> mapFunction = (x) =>
             {
                 GroupModel g = new GroupModel();
-                g.MemberCount = (int)x[0];
+                g.Gid = (int)x[0];
                 return g;
             };
 
             List<GroupModel> groupL = QueryHandler.SqlQueryFromConnection(query, mapFunction, dbConnection);
-            return groupL[0].MemberCount;
+            return groupL[0].Gid;
         }
+
+        
+
 
     }
 }

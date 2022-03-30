@@ -10,7 +10,7 @@ namespace UniLife_Backend_CPSC304_Proj.Models
         [Required]
         public string GroupName { get; set; }
  
-        public int MemberCount { get; set; }
+       // public int MemberCount { get; set; }
     }
 
     public class GroupMemberNumObj { 
