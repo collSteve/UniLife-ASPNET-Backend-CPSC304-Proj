@@ -510,7 +510,7 @@ namespace UniLife_Backend_CPSC304_Proj.Services
                 QueryHandler.SqlExecutionQueryFromConnection(updateTypePostQuery, dbConnection);
         }
 
-        private string? DeterminePostType(int pid)
+        public string? DeterminePostType(int pid)
         {
             var numPostQuery = (string s, int id) => $"Select Count(pid) from [dbo].{s} where pid={id}";
 

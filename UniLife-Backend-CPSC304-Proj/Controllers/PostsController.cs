@@ -286,5 +286,29 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
                 return this.BadRequest($"[Non-Existing Object]: {ex.Message}");
             }
         }
+
+        [HttpGet("postType/{pid}")]
+        public ActionResult<string> GetPostTypeByPid(int pid)
+        {
+            try
+            {
+                string? type = this.postService.DeterminePostType(pid);
+
+                return type ?? throw new NonExistingObjectException($"Post with pid {pid} does not exist");
+            }
+            catch (InvalidTypeException ex)
+            {
+                return this.BadRequest($"[Invalid Type Error]: {ex.Message}");
+            }
+            catch (SqlException ex)
+            {
+                return this.BadRequest($"[SQL Query Error]: {ex.Message}");
+            }
+            catch (NonExistingObjectException ex)
+            {
+                return this.BadRequest($"[Non-Existing Object]: {ex.Message}");
+            }
+        }
+
     }
 }
