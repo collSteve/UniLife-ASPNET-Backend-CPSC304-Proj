@@ -140,5 +140,18 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
                 return this.BadRequest($"[SQL Query Error]: {ex.Message}");
             }
         }
+
+        [HttpGet("Count/University")]
+        public ActionResult<List<NumberUsersInUniverityObj>> GetNumberUsersInUniversities()
+        {
+            try
+            {
+                return accountService.GetNumberUsersInUniversities();
+            }
+            catch (SqlException ex)
+            {
+                return this.BadRequest($"[SQL Query Error]: {ex.Message}");
+            }
+        }
     }
 }

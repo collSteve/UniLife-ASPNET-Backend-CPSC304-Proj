@@ -41,4 +41,9 @@ namespace UniLife_Backend_CPSC304_Proj.Models
         public float seller_rating { get; set; }
     }
 
+    public class NumberUsersInUniverityObj
+    {
+        public string UniversityName { get; set; }
+        public int numUsers { get; set; }
+    }
 }

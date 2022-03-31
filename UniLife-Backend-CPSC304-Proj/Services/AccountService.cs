@@ -261,5 +261,23 @@ namespace UniLife_Backend_CPSC304_Proj.Services
                 $"VALUES ({aid}, {gid}, '{role}')";
             QueryHandler.SqlExecutionQueryFromConnection(query, dbConnection);
         }
+
+        public List<NumberUsersInUniverityObj> GetNumberUsersInUniversities()
+        {
+            SelectionQueryObject<NumberUsersInUniverityObj> sQuery =
+                new SelectionQueryObject<NumberUsersInUniverityObj>((u) =>
+                {
+                    NumberUsersInUniverityObj o = new NumberUsersInUniverityObj();
+                    o.UniversityName = (string)u[0];
+                    o.numUsers = (int)u[1];
+                    return o;
+                });
+
+            sQuery.Select("UniName, Count(AID)")
+                .From("[dbo].Enrolls_in")
+                .GroupBy("UniName");
+
+            return QueryHandler.SqlQueryFromConnection(sQuery, dbConnection);
+        }
     }
 }
