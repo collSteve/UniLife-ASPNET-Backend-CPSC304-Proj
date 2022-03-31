@@ -38,6 +38,7 @@ namespace UniLife_Backend_CPSC304_Proj.Models
         public string username { get; set; }
         public string password { get; set; } 
         public string email { get; set; }
+        public float seller_rating { get; set; }
     }
 
 }

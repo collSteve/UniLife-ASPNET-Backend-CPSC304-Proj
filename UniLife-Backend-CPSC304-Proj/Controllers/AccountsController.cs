@@ -67,17 +67,18 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
                 return this.BadRequest($"[SQL Query Error]: {ex.Message}");
             }
         }
-        /*
+
         [HttpPut]
         public ActionResult UpdateAccount([FromBody] UpdateAccountRequestObj updateAccountRequestObj)
         {
             try
             {
-                accountService.updatePost(
+                accountService.UpdateAccount(
                     updateAccountRequestObj.Aid,
                     updateAccountRequestObj.username,
                     updateAccountRequestObj.password,
-                    updateAccountRequestObj.email);
+                    updateAccountRequestObj.email,
+                    updateAccountRequestObj.seller_rating);
                 return Ok();
             }
             catch (SqlException ex)
@@ -89,7 +90,7 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
                 return this.BadRequest($"[Non-Existing Object]: {ex.Message}");
             }
         }
-        */  
+
         [HttpPut]
         public ActionResult JoinGroup([FromBody]accGroupObj acc) {
 
@@ -112,20 +113,32 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
             }
         }
 
-        /*
-        // Getting all accounts in group
+        // Getting all accounts
         [HttpGet]
-        public ActionResult<List<AccountModel>> GetAccountsinGroup()
+        public ActionResult<List<AccountModel>> GetAllAccounts()
         {
             try
             {
-                return accountService.GetAccountsinGroup();
+                return accountService.GetAllAccounts();
             }
             catch (SqlException ex)
             {
                 return this.BadRequest($"[SQL Query Error]: {ex.Message}");
             }
         }
-        */
+
+        // Getting all accounts' Username
+        [HttpGet]
+        public ActionResult<List<AccountModel>> GetAllAccountsUsername()
+        {
+            try
+            {
+                return accountService.GetAllAccountsUsername();
+            }
+            catch (SqlException ex)
+            {
+                return this.BadRequest($"[SQL Query Error]: {ex.Message}");
+            }
+        }
     }
 }
