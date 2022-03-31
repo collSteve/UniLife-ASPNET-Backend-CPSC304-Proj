@@ -104,7 +104,7 @@ namespace UniLife_Backend_CPSC304_Proj.Services
 
             if (seller_rating != null)
             {
-                string updateTypeAccountQuery = $"UPDATE [dbo].User_Account SET seller_rating = '{seller_rating}' WHERE AID={aid}";
+                string updateTypeAccountQuery = $"UPDATE [dbo].User_Account SET Seller_Rating = '{seller_rating}' WHERE AID={aid}";
                 QueryHandler.SqlExecutionQueryFromConnection(updateTypeAccountQuery, dbConnection);
             }
         }
@@ -276,6 +276,26 @@ namespace UniLife_Backend_CPSC304_Proj.Services
             sQuery.Select("UniName, Count(AID)")
                 .From("[dbo].Enrolls_in")
                 .GroupBy("UniName");
+
+            return QueryHandler.SqlQueryFromConnection(sQuery, dbConnection);
+        }
+
+        public List<UserswithMaximumRatingObj> GetUserswithMaximumRating()
+        {
+            SelectionQueryObject<UserswithMaximumRatingObj> sQuery =
+                new SelectionQueryObject<UserswithMaximumRatingObj>((u) =>
+                {
+                    UserswithMaximumRatingObj o = new UserswithMaximumRatingObj();
+                    o.AID = (int)u[0];
+                    o.username = (string)u[1];
+                    o.max_rating = (float)u[2];
+                    return o;
+                });
+
+            sQuery.Select("A.[AID], A.[username], UA.[Seller_Rating]")
+                .From("[dbo].User_Account UA, [dbo].Account A")
+                .Where("UA.AID = A.AID and UA.Seller_Rating =" +
+                "Select MAX(UA2.Seller_Rating) from [dbo].User_Account UA2)");
 
             return QueryHandler.SqlQueryFromConnection(sQuery, dbConnection);
         }

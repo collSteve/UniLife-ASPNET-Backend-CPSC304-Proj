@@ -46,4 +46,11 @@ namespace UniLife_Backend_CPSC304_Proj.Models
         public string UniversityName { get; set; }
         public int numUsers { get; set; }
     }
+
+    public class UserswithMaximumRatingObj
+    {
+        public int AID { get; set; }
+        public string username { get; set; }
+        public float max_rating { get; set; }
+    }
 }

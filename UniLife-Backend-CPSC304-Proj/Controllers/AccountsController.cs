@@ -153,5 +153,17 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
                 return this.BadRequest($"[SQL Query Error]: {ex.Message}");
             }
         }
+
+        public ActionResult<List<UserswithMaximumRatingObj>> GetUsersWithMaximumRating()
+        {
+            try
+            {
+                return accountService.GetUserswithMaximumRating();
+            }
+            catch (SqlException ex)
+            {
+                return this.BadRequest($"[SQL Query Error]: {ex.Message}");
+            }
+        }
     }
 }
