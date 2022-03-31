@@ -155,6 +155,22 @@ namespace UniLife_Backend_CPSC304_Proj.Services
             return (val.Equals("admin"));
         }
 
+        public List<GroupModel> getNewGroups(int aid)
+        {
+            string query = @$"select * from [Group] except(select m.Gid, Group_Name from Member_Of m, [Group] g where Aid = {aid} and m.gid = g.gid)";
+
+            Func<DbDataReader, GroupModel> mapFunction = (x) =>
+            {
+                GroupModel g = new GroupModel();
+                g.Gid = (int)x[0];
+                g.GroupName = (string)x[1];
+                return g;
+            };
+
+            return QueryHandler.SqlQueryFromConnection(query, mapFunction, dbConnection);
+
+    
+        }
 
     }
 }

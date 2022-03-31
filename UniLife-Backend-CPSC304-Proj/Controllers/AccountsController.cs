@@ -91,7 +91,7 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
             }
         }
 
-        [HttpPut]
+        [HttpPut("Group")]
         public ActionResult JoinGroup([FromBody]accGroupObj acc) {
 
             int aid = acc.AID;
@@ -126,9 +126,9 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
                 return this.BadRequest($"[SQL Query Error]: {ex.Message}");
             }
         }
-
+        
         // Getting all accounts' Username
-        [HttpGet]
+        [HttpGet("Username")]
         public ActionResult<List<AccountModel>> GetAllAccountsUsername()
         {
             try
