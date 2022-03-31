@@ -85,15 +85,15 @@ namespace UniLife_Backend_CPSC304_Proj.Services
             QueryHandler.SqlExecutionQueryFromConnection(deleteQuery, dbConnection);
         }
 
-        public void UpdateAccount(int aid, string username, string? password, string email, float? seller_rating)
+        public void UpdateAccount(int aid, string? username, string? password, string? email, float? seller_rating)
         {
             string accountType = DetermineAccountType(aid) ??
                 throw new NonExistingObjectException($"Post with PID {aid} does not exist.");
 
             List<string> setClauses = new List<string>();
-            setClauses.Add($"Username = '{username}'");
+            if (username != null) setClauses.Add($"Username = '{username}'");
             if (password != null) setClauses.Add($"Password = '{password}'");
-            setClauses.Add($"Email = '{email}'");
+            if (email != null) setClauses.Add($"Email = '{email}'");
 
             if (setClauses.Count > 0)
             {
