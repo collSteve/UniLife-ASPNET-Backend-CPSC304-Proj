@@ -140,8 +140,17 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
             {
                 return this.BadRequest($"[SQL Query Error]: {ex.Message}");
             }
-        }    
-
+        }
+        [HttpGet("Group/{Gid}/{Aid}")]
+        public ActionResult<Boolean> isAdmin(int Gid, int Aid) {
+            try
+            {
+                return groupService.isAdmin(Gid, Aid);
+            }
+            catch (SqlException ex){
+                return this.BadRequest($"[SQL Query Error]: {ex.Message}");
+            }
+        }
     }
 }
 

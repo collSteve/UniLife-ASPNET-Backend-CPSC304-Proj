@@ -138,7 +138,22 @@ namespace UniLife_Backend_CPSC304_Proj.Services
             return groupL[0].Gid;
         }
 
-        
+        public Boolean isAdmin(int gid, int aid) {
+            string query = @$"SELECT Role FROM [dbo].[Member_Of] WHERE Gid = {gid} and Aid = {aid}";
+
+            Func<DbDataReader, GroupModel> mapFunction = (x) =>
+            {
+                GroupModel g = new GroupModel();
+                g.GroupName = (string)x[0];
+                return g;
+            };
+
+            List<GroupModel> groupL = QueryHandler.SqlQueryFromConnection(query, mapFunction, dbConnection);
+
+            string val = groupL[0].GroupName;
+
+            return (val.Equals("admin"));
+        }
 
 
     }
