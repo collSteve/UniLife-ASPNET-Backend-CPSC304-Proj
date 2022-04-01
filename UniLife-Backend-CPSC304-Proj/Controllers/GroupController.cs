@@ -43,15 +43,15 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
         }
         // www.server.com/api/Group/create
         [HttpPost]
-        public ActionResult CreateGroup([FromBody]GroupNewObj gno) {
+        public ActionResult CreateGroup([FromBody] GroupNewObj gno) {
 
-   
+
             string groupName = gno.GroupName;
             int Aid = gno.Aid;
 
             try
             {
-               groupService.CreateGroup(groupName, Aid);
+                groupService.CreateGroup(groupName, Aid);
                 return Ok();
 
             }
@@ -96,7 +96,7 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
 
          }*/
 
-        
+
         // www.server.com/api/Group/search/(name)
         [HttpGet("search/{Group_Name}")]
         public ActionResult<List<GroupModel>> getGroupByName(string Group_Name, bool? asc)
@@ -147,17 +147,44 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
             {
                 return groupService.isAdmin(Gid, Aid);
             }
-            catch (SqlException ex){
+            catch (SqlException ex) {
                 return this.BadRequest($"[SQL Query Error]: {ex.Message}");
             }
         }
-        
+
         [HttpGet("{Aid}")]
-        public ActionResult<List<GroupModel>> getNewGroups( int Aid)
+        public ActionResult<List<GroupModel>> getNewGroups(int Aid)
         {
             try
             {
                 return groupService.getNewGroups(Aid);
+            }
+            catch (SqlException ex)
+            {
+                return this.BadRequest($"[SQL Query Error]: {ex.Message}");
+            }
+        }
+
+
+        [HttpGet("myGroups/{Aid}")]
+        public ActionResult<List<GroupModel>> getMyGroups(int Aid)
+        {
+            try
+            {
+                return groupService.getMyGroups(Aid);
+            }
+            catch (SqlException ex)
+            {
+                return this.BadRequest($"[SQL Query Error]: {ex.Message}");
+            }
+        }
+
+        [HttpGet("Info/{Gid}")]
+        public ActionResult<List<GroupModel>> getGroupInfoGid(int Gid)
+        {
+            try
+            {
+                return groupService.getGroupGivenGid(Gid);
             }
             catch (SqlException ex)
             {
