@@ -42,12 +42,12 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
         [HttpGet("Categories")]
         public ActionResult<List<AdvertisementModel>> GetAdvertisementsByCategories(
             [FromQuery(Name = "category")] string[] categories,
-            AdvertisementModel.OrderByValue? orderBy, bool? asc)
+            AdvertisementModel.OrderWithValue? orderBy, bool? asc)
         {
             try
             {
                 return advertisementService.GetAdvertisementsWithAllCategories(categories,
-                    orderBy ?? AdvertisementModel.OrderByValue.CreatedDate,
+                    orderBy ?? AdvertisementModel.OrderWithValue.CreatedDate,
                     asc ?? false);
             }
             catch (SqlException ex)

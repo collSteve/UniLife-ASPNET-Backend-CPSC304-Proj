@@ -4,7 +4,7 @@ namespace UniLife_Backend_CPSC304_Proj.Models
 {
     public class AdvertisementModel
     {
-        public enum OrderByValue
+        public enum OrderWithValue
         {
             CreatedDate,
             Title

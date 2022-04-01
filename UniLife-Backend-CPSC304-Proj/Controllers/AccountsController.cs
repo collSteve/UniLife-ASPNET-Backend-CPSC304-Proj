@@ -154,6 +154,7 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
             }
         }
 
+        [HttpGet("MaxR")]
         public ActionResult<List<UserswithMaximumRatingObj>> GetUsersWithMaximumRating()
         {
             try

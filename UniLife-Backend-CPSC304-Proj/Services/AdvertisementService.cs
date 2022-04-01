@@ -40,7 +40,7 @@ namespace UniLife_Backend_CPSC304_Proj.Services
         
         public List<AdvertisementModel> GetAdvertisementsWithAllCategories(
             string[] categories,
-            AdvertisementModel.OrderByValue orderBy = AdvertisementModel.OrderByValue.CreatedDate,
+            AdvertisementModel.OrderWithValue orderBy = AdvertisementModel.OrderWithValue.CreatedDate,
             bool asc = false)
         {
             SelectionQueryObject<AdvertisementModel> sQuery = GetAllAdvertisementsQuery(orderBy, asc);
@@ -68,7 +68,7 @@ namespace UniLife_Backend_CPSC304_Proj.Services
             return QueryHandler.SqlQueryFromConnection(sQuery, dbConnection);
         }
 
-        private SelectionQueryObject<AdvertisementModel> GetAllAdvertisementsQuery(AdvertisementModel.OrderByValue orderBy = AdvertisementModel.OrderByValue.CreatedDate, bool asc = false)
+        private SelectionQueryObject<AdvertisementModel> GetAllAdvertisementsQuery(AdvertisementModel.OrderWithValue orderBy = AdvertisementModel.OrderWithValue.CreatedDate, bool asc = false)
         {
 
             string orderAttribute = GetOrderByAttribute(orderBy);
@@ -95,17 +95,17 @@ namespace UniLife_Backend_CPSC304_Proj.Services
             return sQuery;
         }
 
-        private string GetOrderByAttribute(AdvertisementModel.OrderByValue order)
+        private string GetOrderByAttribute(AdvertisementModel.OrderWithValue order)
         {
             switch (order)
             {
-                case AdvertisementModel.OrderByValue.Title:
+                case AdvertisementModel.OrderWithValue.Title:
                     return "Title";
-                case AdvertisementModel.OrderByValue.CreatedDate:
+                case AdvertisementModel.OrderWithValue.CreatedDate:
                     return "Create_Date";
                 default:
                     throw new InvalidTypeException("Invalid Order By Value. Expecting " +
-                        $"<{AdvertisementModel.OrderByValue.Title}>, or <{AdvertisementModel.OrderByValue.CreatedDate}>. " +
+                        $"<{AdvertisementModel.OrderWithValue.Title}>, or <{AdvertisementModel.OrderWithValue.CreatedDate}>. " +
                         $"But received <{order}> instead");
             }
         }
