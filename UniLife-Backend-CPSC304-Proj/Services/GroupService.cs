@@ -21,13 +21,17 @@ namespace UniLife_Backend_CPSC304_Proj.Services
         //gets all groups
         public List<GroupModel> GetAllGroups()
         {
-            string query = @"SELECT [Gid], [Group_Name]" +
-                        "from [dbo].[Group]";
+            string query = @"select GID, Group_Name, memberCount 
+                            from
+                            (select * from [Group]
+                            inner join
+                            (select g.gid as gd, count(aid) as memberCount from [Group] g, Member_Of m where g.gid = m.gid group by g.gid) p ON [Group].GID = p.gd)n";
             Func<DbDataReader, GroupModel> mapFunction = (x) =>
             {
                 GroupModel g = new GroupModel();
                 g.Gid = (int)x[0];
                 g.GroupName = (string)x[1];
+                g.MemberCount = (int)x[2];
                
                 return g;
             };
@@ -40,8 +44,8 @@ namespace UniLife_Backend_CPSC304_Proj.Services
         //inserts new group
         public void CreateGroup(string GroupName, int Aid)
         {
-
-            string hashString = $"{GroupName}{Aid}";
+            DateTime localDate = DateTime.Now;
+            string hashString = $"{GroupName}{Aid}{localDate}";
             MD5 md5Hasher = MD5.Create();
             byte[] hashed = md5Hasher.ComputeHash(Encoding.UTF8.GetBytes(hashString));
             int generatedGID = BitConverter.ToInt32(hashed, 0);
@@ -137,7 +141,7 @@ namespace UniLife_Backend_CPSC304_Proj.Services
             List<GroupModel> groupL = QueryHandler.SqlQueryFromConnection(query, mapFunction, dbConnection);
             return groupL[0].Gid;
         }
-
+        //checks if given aid is admin in gid
         public Boolean isAdmin(int gid, int aid) {
             string query = @$"SELECT Role FROM [dbo].[Member_Of] WHERE Gid = {gid} and Aid = {aid}";
 
@@ -154,7 +158,7 @@ namespace UniLife_Backend_CPSC304_Proj.Services
 
             return (val.Equals("admin"));
         }
-
+        //selects groups excluding those given aid is in
         public List<GroupModel> getNewGroups(int aid)
         {
             string query = @$"select * from [Group] except(select m.Gid, Group_Name from Member_Of m, [Group] g where Aid = {aid} and m.gid = g.gid)";
@@ -170,6 +174,77 @@ namespace UniLife_Backend_CPSC304_Proj.Services
             return QueryHandler.SqlQueryFromConnection(query, mapFunction, dbConnection);
 
     
+        }
+        // selects groups that given aid is in
+        public List<GroupModel> getMyGroups(int aid)
+        {
+            string query = @$"select t.Group_Name, [Role], q.gid, x.memberCount from Member_Of q, [Group] t, (select GID, Group_Name, memberCount 
+                               from(select * from [Group]inner join(select g.gid as gd, count(aid) as memberCount from [Group] g, Member_Of m where g.gid = m.gid group by g.gid) p ON [Group].GID = p.gd)n)x 
+                                where Aid = {aid} and q.gid = t.gid and t.gid = x.gid";
+
+            Func<DbDataReader, GroupModel> mapFunction = (x) =>
+            {
+                GroupModel g = new GroupModel();
+   
+                g.GroupName = (string)x[0];
+                g.Role = (string)x[1];
+                g.Gid = (int)x[2];
+                g.MemberCount = (int)x[3];
+                return g;
+            };
+
+            return QueryHandler.SqlQueryFromConnection(query, mapFunction, dbConnection);
+
+
+        }
+
+        public List<GroupModel> getGroupGivenGid(int gid) {
+            string query = @$"select g.gid, g.Group_Name, count(m.AID)from [group] g, [Member_Of] m where g.gid = {gid} and g.gid = m.gid group by g.gid, g.Group_Name";
+
+            Func<DbDataReader, GroupModel> mapFunction = (x) =>
+            {
+                GroupModel g = new GroupModel();
+
+                g.Gid = (int)x[0];
+                g.GroupName = (string)x[1];
+                g.MemberCount = (int)x[2];
+                return g;
+            };
+
+            return QueryHandler.SqlQueryFromConnection(query, mapFunction, dbConnection);
+        }
+
+        public List<PostModel> getGroupPostIDs(int gid)
+        {
+            string query = @$"select p.pid, Create_Date, Title, Post_Body, Num_Likes, Num_Dislikes, Creator_UID, h.gid from [Post]p, [Has_Group_Post]h where h.pid = p.pid and gid = {gid}";
+
+            Func<DbDataReader, PostModel> mapFunction = (x) =>
+            {
+                PostModel g = new PostModel();
+
+                g.Pid = (int)x[0];
+                g.CreatedDate = (DateTime)x[1];
+                g.Title = (string)x[2];
+                g.PostBody = (string)x[3];
+                g.NumLikes = (int)x[4];
+                g.NumDislikes  = (int)x[5];
+                g.CreatorAid = (int)x[6];
+                g.Gid = (int)x[7];
+               
+                return g;
+            };
+
+            return QueryHandler.SqlQueryFromConnection(query, mapFunction, dbConnection);
+        }
+
+        public void CreateGroupPost(int Gid, int Pid)
+        {
+           
+            string query = @"INSERT INTO [dbo].[Has_Group_Post]([gid], [pid])"  +
+                            $"VALUES ({Gid}, {Pid})";
+
+            QueryHandler.SqlExecutionQueryFromConnection(query, dbConnection);
+         
         }
 
     }
