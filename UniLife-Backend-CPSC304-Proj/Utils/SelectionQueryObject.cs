@@ -155,5 +155,10 @@ namespace UniLife_Backend_CPSC304_Proj.Utils
             clone.IsDistinct = IsDistinct;
             return clone;
         }
+
+        public override string ToString()
+        {
+            return this.SqlQuery();
+        }
     }
 }

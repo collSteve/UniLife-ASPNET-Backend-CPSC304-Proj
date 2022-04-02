@@ -116,6 +116,7 @@ namespace UniLife_Backend_CPSC304_Proj.Services
                 .SetIsAscending(asc)
                 .SetIsDistinct(true);
 
+            Console.WriteLine($"Selling Post Query: {sQuery.FormattedSqlQuery()}");
             return sQuery;
         }
 
@@ -147,6 +148,9 @@ namespace UniLife_Backend_CPSC304_Proj.Services
                 .OrderBy(orderAttribute)
                 .SetIsAscending(asc)
                 .SetIsDistinct(true);
+
+            Console.WriteLine($"Housing Post Query: {sQuery.FormattedSqlQuery()}");
+
             return sQuery;
         }
 
@@ -176,6 +180,8 @@ namespace UniLife_Backend_CPSC304_Proj.Services
                 .OrderBy(orderAttribute)
                 .SetIsAscending(asc)
                 .SetIsDistinct(true);
+
+            Console.WriteLine($"Social Media Post Query: {sQuery.FormattedSqlQuery()}");
 
             return sQuery;
         }
@@ -320,6 +326,8 @@ namespace UniLife_Backend_CPSC304_Proj.Services
 
             sQuery.AddToWhereClause($"and (title LIKE '%{title}%' or [Post_Body] LIKE '%{title}%')");
 
+            Console.WriteLine($"Search Post Query: {sQuery.FormattedSqlQuery()}");
+
             return QueryHandler.SqlQueryFromConnection<PostModel>(sQuery, dbConnection);
         }
 
@@ -350,7 +358,8 @@ namespace UniLife_Backend_CPSC304_Proj.Services
             sQuery.AddToWhereClause("and 0<(select Count(C.ctg_type) from Categories C " +
                 $"where {selectedCategoriesWhereClause})");
 
-            // Console.WriteLine(sQuery.FormattedSqlQuery());
+            Console.WriteLine($"Get Post By Categories Query: {sQuery.FormattedSqlQuery()}");
+
 
             return QueryHandler.SqlQueryFromConnection(sQuery, dbConnection);
         }
@@ -382,7 +391,7 @@ namespace UniLife_Backend_CPSC304_Proj.Services
             sQuery.AddToWhereClause("and 0<(select Count(C.ctg_type) from Categories C " +
                 $"where {selectedCategoriesWhereClause})");
 
-            // Console.WriteLine(sQuery.FormattedSqlQuery());
+            Console.WriteLine($"Get Post By Categories Query: {sQuery.FormattedSqlQuery()}");
 
             return sQuery;
         }
@@ -407,7 +416,10 @@ namespace UniLife_Backend_CPSC304_Proj.Services
             // insert to according types
             string insertTypeQuery = GetInsertQueryForPostTypes(postType, generatedPID,
                 email, phoneNumber, address);
-            Console.WriteLine(insertTypeQuery);
+
+            Console.WriteLine($"Insert New Post Query 1: {postQueryString}");
+            Console.WriteLine($"Insert New Post Query 2: {insertTypeQuery}");
+
 
             QueryHandler.SqlExecutionQueryFromConnection(postQueryString, dbConnection);
 
@@ -567,6 +579,8 @@ namespace UniLife_Backend_CPSC304_Proj.Services
             rQuery.OrderByClauseContent = null;
             Console.WriteLine(rQuery.SqlQuery());
 
+            Console.WriteLine($"Num Posts by Categories Query: {rQuery.FormattedSqlQuery()}");
+
             return QueryHandler.SqlQueryFromConnection(rQuery, dbConnection)[0];
         }
 
@@ -585,6 +599,8 @@ namespace UniLife_Backend_CPSC304_Proj.Services
                 .From("[dbo].University_Post")
                 .GroupBy("UniName");
 
+            Console.WriteLine($"Num Posts by University Query: {sQuery.FormattedSqlQuery()}");
+
             return QueryHandler.SqlQueryFromConnection(sQuery, dbConnection);
         }
 
@@ -596,6 +612,9 @@ namespace UniLife_Backend_CPSC304_Proj.Services
             SelectionQueryObject<PostModel> sQuery = GetPostsByTypeQuery(postType);
 
             sQuery.AddToWhereClause($"and P.PID={pid}");
+
+            Console.WriteLine($"Posts by pid Query: {sQuery.FormattedSqlQuery()}");
+
 
             return QueryHandler.SqlQueryFromConnection(sQuery, dbConnection)[0];
 
@@ -616,6 +635,8 @@ namespace UniLife_Backend_CPSC304_Proj.Services
             sQuery.Select("C.cid, C.PID, C.Comment_Body, A.Username, C.Creator_UID")
                 .From("[dbo].Comment C, [dbo].Account A")
                 .Where($"C.Creator_UID = A.AID and C.PID = {pid}");
+
+            Console.WriteLine($"Comments by pid Query: {sQuery.FormattedSqlQuery()}");
 
             return QueryHandler.SqlQueryFromConnection(sQuery, dbConnection);
         }
