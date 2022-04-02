@@ -129,7 +129,7 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
         
         // Getting all accounts' Username
         [HttpGet("Username")]
-        public ActionResult<List<AccountModel>> GetAllAccountsUsernameAndEmail()
+        public ActionResult<List<GetUsernameandEmailRequestObject>> GetAllAccountsUsernameAndEmail()
         {
             try
             {

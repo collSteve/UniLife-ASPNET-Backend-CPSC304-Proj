@@ -53,4 +53,10 @@ namespace UniLife_Backend_CPSC304_Proj.Models
         public string username { get; set; }
         public float max_rating { get; set; }
     }
+
+    public class GetUsernameandEmailRequestObject
+    {
+        public string Email { set; get; }
+        public string Username { set; get; }
+    }
 }
