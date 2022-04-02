@@ -129,11 +129,11 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
         
         // Getting all accounts' Username
         [HttpGet("Username")]
-        public ActionResult<List<AccountModel>> GetAllAccountsUsername()
+        public ActionResult<List<AccountModel>> GetAllAccountsUsernameAndEmail()
         {
             try
             {
-                return accountService.GetAllAccountsUsername();
+                return accountService.GetAllAccountsUsernameAndEmail();
             }
             catch (SqlException ex)
             {
