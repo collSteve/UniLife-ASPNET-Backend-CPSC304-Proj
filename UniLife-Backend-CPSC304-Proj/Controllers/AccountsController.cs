@@ -40,8 +40,8 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
                 accountService.CreateNewAccount(
                     createNewAccountRequestObj.AccountType,
                     createNewAccountRequestObj.Username,
-                    createNewAccountRequestObj.Password,
-                    createNewAccountRequestObj.Email);
+                    createNewAccountRequestObj.Email,
+                    createNewAccountRequestObj.Password);
                 return Ok();
             }
             catch (InvalidTypeException ex)
