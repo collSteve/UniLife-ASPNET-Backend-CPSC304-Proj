@@ -85,50 +85,222 @@ namespace UniLife_Backend_CPSC304_Proj.Services
             QueryHandler.SqlExecutionQueryFromConnection(deleteQuery, dbConnection);
         }
 
-        public void UpdateAccount(int aid, string username, string password, string email)
+        public void UpdateAccount(int aid, string? username, string? password, string? email, float? seller_rating)
+        {
+            string accountType = DetermineAccountType(aid) ??
+                throw new NonExistingObjectException($"Post with PID {aid} does not exist.");
+
+            List<string> setClauses = new List<string>();
+            if (username != null) setClauses.Add($"Username = '{username}'");
+            if (password != null) setClauses.Add($"Password = '{password}'");
+            if (email != null) setClauses.Add($"Email = '{email}'");
+
+            if (setClauses.Count > 0)
+            {
+                string setClause = String.Join(", ", setClauses.ToArray());
+                string updateAccountQuery = $"UPDATE [dbo].Account SET {setClause} WHERE AID={aid}";
+                QueryHandler.SqlExecutionQueryFromConnection(updateAccountQuery, dbConnection);
+            }
+
+            if (seller_rating != null)
+            {
+                string updateTypeAccountQuery = $"UPDATE [dbo].User_Account SET Seller_Rating = '{seller_rating}' WHERE AID={aid}";
+                QueryHandler.SqlExecutionQueryFromConnection(updateTypeAccountQuery, dbConnection);
+            }
+        }
+
+        public string? DetermineAccountType(int aid)
+        {
+            var numAccountQuery = (string a, int id) => $"Select Count(AID) from [dbo].{a} where Aid={id}";
+
+            int user = QueryHandler.SqlQueryFromConnection<int>(numAccountQuery("User_Account", aid),
+                 (s) => (int)s[0], dbConnection)[0];
+            int admin = QueryHandler.SqlQueryFromConnection<int>(numAccountQuery("Admin_Account", aid),
+                (s) => (int)s[0], dbConnection)[0];
+            int business = QueryHandler.SqlQueryFromConnection<int>(numAccountQuery("Business_Account", aid),
+                (s) => (int)s[0], dbConnection)[0];
+
+            if (user > 0) return AccountType.UserAccount;
+            if (admin > 0) return AccountType.AdminAccount;
+            if (business > 0) return AccountType.BusinessAccount;
+            return null;
+        }
+        public List<GetUsernameandEmailRequestObject> GetAllAccountsUsernameAndEmail()
+        {
+            List<GetUsernameandEmailRequestObject> userAccounts = GetAllUserAccountsUsernameAndEmail();
+            List<GetUsernameandEmailRequestObject> adminAccounts = GetAllAdminAccountsUsernameAndEmail();
+            List<GetUsernameandEmailRequestObject> businessAccounts = GetAllBusinessAccountsUsernameAndEmail();
+
+            return adminAccounts.Concat(userAccounts.Concat(businessAccounts)).ToList();
+        }
+
+        public List<AccountModel> GetAllAccounts()
+        {
+            List<AccountModel> userAccounts = GetAllUserAccounts();
+            List<AccountModel> adminAccounts = GetAllAdminAccounts();
+            List<AccountModel> businessAccounts = GetAllBusinessAccounts();
+
+            return adminAccounts.Concat(userAccounts.Concat(businessAccounts)).ToList();
+        }
+
+        public List<AccountModel> GetAllUserAccounts()
+        {
+            Func<DbDataReader, AccountModel> mapFunction = (x) =>
+            {
+                AccountModel a = new AccountModel();
+                a.Aid = (int)x[0];
+                a.Username = (string)x[1];
+                a.Password = (string)x[2];
+                a.Email = (string)x[3];
+                return a;
+            };
+
+            SelectionQueryObject<AccountModel> sQuery = new SelectionQueryObject<AccountModel>(mapFunction);
+            sQuery.Select("A.[AID], A.[Username], A.[Password], A.[Email]")
+                .From("[dbo].[User_Account] UA, [dbo].[Account] A")
+                .Where("UA.AID = A.AID");
+
+            return QueryHandler.SqlQueryFromConnection<AccountModel>(sQuery, dbConnection);
+        }
+
+        public List<AccountModel> GetAllAdminAccounts()
+        {
+            Func<DbDataReader, AccountModel> mapFunction = (x) =>
+            {
+                AccountModel a = new AccountModel();
+                a.Aid = (int)x[0];
+                a.Username = (string)x[1];
+                a.Password = (string)x[2];
+                a.Email = (string)x[3];
+                return a;
+            };
+
+            SelectionQueryObject<AccountModel> sQuery = new SelectionQueryObject<AccountModel>(mapFunction);
+            sQuery.Select("A.[AID], A.[Username], A.[Password], A.[Email]")
+                .From("[dbo].[Admin_Account] AA, [dbo].[Account] A")
+                .Where("AA.AID = A.AID");
+
+            return QueryHandler.SqlQueryFromConnection<AccountModel>(sQuery, dbConnection);
+        }
+
+        public List<AccountModel> GetAllBusinessAccounts()
+        {
+            Func<DbDataReader, AccountModel> mapFunction = (x) =>
+            {
+                AccountModel a = new AccountModel();
+                a.Aid = (int)x[0];
+                a.Username = (string)x[1];
+                a.Password = (string)x[2];
+                a.Email = (string)x[3];
+                return a;
+            };
+
+            SelectionQueryObject<AccountModel> sQuery = new SelectionQueryObject<AccountModel>(mapFunction);
+            sQuery.Select("A.[AID], A.[Username], A.[Password], A.[Email]")
+                .From("[dbo].[Business_Account] BA, [dbo].[Account] A")
+                .Where("BA.AID = A.AID");
+
+            return QueryHandler.SqlQueryFromConnection<AccountModel>(sQuery, dbConnection);
+        }
+
+        public List<GetUsernameandEmailRequestObject> GetAllUserAccountsUsernameAndEmail()
+        {
+            Func<DbDataReader, GetUsernameandEmailRequestObject> mapFunction = (x) =>
+            {
+                GetUsernameandEmailRequestObject a = new GetUsernameandEmailRequestObject();
+                a.Username = (string)x[0];
+                a.Email = (string)x[1];
+                return a;
+            };
+
+            SelectionQueryObject<GetUsernameandEmailRequestObject> sQuery = new SelectionQueryObject<GetUsernameandEmailRequestObject>(mapFunction);
+            sQuery.Select("A.[Username], A.[Email]")
+                .From("[dbo].[User_Account] UA, [dbo].[Account] A")
+                .Where("UA.AID = A.AID");
+
+            return QueryHandler.SqlQueryFromConnection<GetUsernameandEmailRequestObject>(sQuery, dbConnection);
+        }
+
+        public List<GetUsernameandEmailRequestObject> GetAllAdminAccountsUsernameAndEmail()
+        {
+            Func<DbDataReader, GetUsernameandEmailRequestObject> mapFunction = (x) =>
+            {
+                GetUsernameandEmailRequestObject a = new GetUsernameandEmailRequestObject();
+                a.Username = (string)x[0];
+                a.Email = (string)x[1];
+                return a;
+            };
+
+            SelectionQueryObject<GetUsernameandEmailRequestObject> sQuery = new SelectionQueryObject<GetUsernameandEmailRequestObject>(mapFunction);
+            sQuery.Select("A.[Username], A.[Email]")
+                .From("[dbo].[Admin_Account] AA, [dbo].[Account] A")
+                .Where("AA.AID = A.AID");
+
+            return QueryHandler.SqlQueryFromConnection<GetUsernameandEmailRequestObject>(sQuery, dbConnection);
+        }
+
+        public List<GetUsernameandEmailRequestObject> GetAllBusinessAccountsUsernameAndEmail()
+        {
+            Func<DbDataReader, GetUsernameandEmailRequestObject> mapFunction = (x) =>
+            {
+                GetUsernameandEmailRequestObject a = new GetUsernameandEmailRequestObject();
+                a.Username = (string)x[0];
+                a.Email = (string)x[1];
+                return a;
+            };
+
+            SelectionQueryObject<GetUsernameandEmailRequestObject> sQuery = new SelectionQueryObject<GetUsernameandEmailRequestObject>(mapFunction);
+            sQuery.Select("A.[Username], A.[Email]")
+                .From("[dbo].[Business_Account] BA, [dbo].[Account] A")
+                .Where("BA.AID = A.AID");
+
+            return QueryHandler.SqlQueryFromConnection<GetUsernameandEmailRequestObject>(sQuery, dbConnection);
+        }
+
+        public void JoinGroup(int aid, int gid, string role)
         {
 
-        }
-        public void JoinGroup(int aid, int gid, string role) {
-
-            string query = @"INSERT INTO [dbo].[Member_Of]([AID], [GID], [Role])" + 
+            string query = @"INSERT INTO [dbo].[Member_Of]([AID], [GID], [Role])" +
                 $"VALUES ({aid}, {gid}, '{role}')";
             QueryHandler.SqlExecutionQueryFromConnection(query, dbConnection);
         }
 
-
-
-
-        /*
-        public List<AccountModel> GetAccountsinGroup()
+        public List<NumberUsersInUniverityObj> GetNumberUsersInUniversities()
         {
-            List<AccountModel> UserAccounts = GetUserAccounts();
-            return UserAccounts;
+            SelectionQueryObject<NumberUsersInUniverityObj> sQuery =
+                new SelectionQueryObject<NumberUsersInUniverityObj>((u) =>
+                {
+                    NumberUsersInUniverityObj o = new NumberUsersInUniverityObj();
+                    o.UniversityName = (string)u[0];
+                    o.numUsers = (int)u[1];
+                    return o;
+                });
 
-        }
+            sQuery.Select("UniName, Count(AID)")
+                .From("[dbo].Enrolls_in")
+                .GroupBy("UniName");
 
-        public List<AccountModel> GetUserAccounts()
-        {
-            SelectionQueryObject<AccountModel> sQuery = GetUserAccountsQuery();
             return QueryHandler.SqlQueryFromConnection(sQuery, dbConnection);
         }
 
-        public List<AccountModel> GetUserAccountsQuery()
+        public List<UserswithMaximumRatingObj> GetUserswithMaximumRating()
         {
-            Func<DbDataReader, AccountModel> mapFunction = (x) =>
-            {
-                AccountModel acc = new AccountModel();
-                acc.Username = (string)x[0];
-                return acc;
-            };
+            SelectionQueryObject<UserswithMaximumRatingObj> sQuery =
+                new SelectionQueryObject<UserswithMaximumRatingObj>((u) =>
+                {
+                    UserswithMaximumRatingObj o = new UserswithMaximumRatingObj();
+                    o.AID = (int)u[0];
+                    o.username = (string)u[1];
+                    o.max_rating = (float)u[2];
+                    return o;
+                });
 
-            SelectionQueryObject<AccountModel> sQuery = new SelectionQueryObject<AccountModel>(mapFunction);
-            sQuery.Select("Account.Username")
-                .From("[dbo].[Account], [dbo].[User_Account], [dbo.]")
-                .Where("Account.AID = User_Account.AID")
-                .SetIsDistinct(true);
-            return sQuery;
+            sQuery.Select("A.[AID], A.[username], UA.[Seller_Rating]")
+                .From("[dbo].User_Account UA, [dbo].Account A")
+                .Where("UA.AID = A.AID and UA.Seller_Rating =" +
+                "Select MAX(UA2.Seller_Rating) from [dbo].User_Account UA2)");
+
+            return QueryHandler.SqlQueryFromConnection(sQuery, dbConnection);
         }
-        */
     }
 }

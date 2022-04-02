@@ -7,10 +7,12 @@ namespace UniLife_Backend_CPSC304_Proj.Models
         [Required]
         public int Gid { get; set; }
 
-        [Required]
+  
         public string GroupName { get; set; }
- 
-       // public int MemberCount { get; set; }
+        
+        public string Role { get; set; }
+        public int MemberCount { get; set; }
+        public int Pid { get; set; }
     }
 
     public class GroupMemberNumObj { 
@@ -28,6 +30,17 @@ namespace UniLife_Backend_CPSC304_Proj.Models
     
     }
 
+    public class MemberOfObj { 
+        public int Gid { get; set; }
+        public int Aid { get; set; }
+        public string Role { get; set; }
+    }
+
+    public class NewGroupPost { 
+        public int Gid { get; set; }
+        public int Pid { get; set; }
+
+    }
    
 
 }

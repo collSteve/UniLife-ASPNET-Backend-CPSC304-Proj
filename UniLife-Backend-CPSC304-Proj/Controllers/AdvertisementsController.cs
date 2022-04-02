@@ -38,5 +38,22 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
                 return this.BadRequest($"[SQL Query Error]: {ex.Message}");
             }
         }
+
+        [HttpGet("Categories")]
+        public ActionResult<List<AdvertisementModel>> GetAdvertisementsByCategories(
+            [FromQuery(Name = "category")] string[] categories,
+            AdvertisementModel.OrderWithValue? orderBy, bool? asc)
+        {
+            try
+            {
+                return advertisementService.GetAdvertisementsWithAllCategories(categories,
+                    orderBy ?? AdvertisementModel.OrderWithValue.CreatedDate,
+                    asc ?? false);
+            }
+            catch (SqlException ex)
+            {
+                return this.BadRequest($"[SQL Query Error]: {ex.Message}");
+            }
+        }
     }
 }
