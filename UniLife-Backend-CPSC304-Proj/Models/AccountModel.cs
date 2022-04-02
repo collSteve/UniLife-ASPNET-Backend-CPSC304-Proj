@@ -51,7 +51,7 @@ namespace UniLife_Backend_CPSC304_Proj.Models
     {
         public int AID { get; set; }
         public string username { get; set; }
-        public float max_rating { get; set; }
+        public double max_rating { get; set; }
     }
 
     public class GetUsernameandEmailRequestObject
