@@ -44,8 +44,8 @@ namespace UniLife_Backend_CPSC304_Proj.Services
         //inserts new group
         public void CreateGroup(string GroupName, int Aid)
         {
-
-            string hashString = $"{GroupName}{Aid}";
+            DateTime localDate = DateTime.Now;
+            string hashString = $"{GroupName}{Aid}{localDate}";
             MD5 md5Hasher = MD5.Create();
             byte[] hashed = md5Hasher.ComputeHash(Encoding.UTF8.GetBytes(hashString));
             int generatedGID = BitConverter.ToInt32(hashed, 0);
@@ -212,6 +212,39 @@ namespace UniLife_Backend_CPSC304_Proj.Services
             };
 
             return QueryHandler.SqlQueryFromConnection(query, mapFunction, dbConnection);
+        }
+
+        public List<PostModel> getGroupPostIDs(int gid)
+        {
+            string query = @$"select p.pid, Create_Date, Title, Post_Body, Num_Likes, Num_Dislikes, Creator_UID, h.gid from [Post]p, [Has_Group_Post]h where h.pid = p.pid and gid = {gid}";
+
+            Func<DbDataReader, PostModel> mapFunction = (x) =>
+            {
+                PostModel g = new PostModel();
+
+                g.Pid = (int)x[0];
+                g.CreatedDate = (DateTime)x[1];
+                g.Title = (string)x[2];
+                g.PostBody = (string)x[3];
+                g.NumLikes = (int)x[4];
+                g.NumDislikes  = (int)x[5];
+                g.CreatorAid = (int)x[6];
+                g.Gid = (int)x[7];
+               
+                return g;
+            };
+
+            return QueryHandler.SqlQueryFromConnection(query, mapFunction, dbConnection);
+        }
+
+        public void CreateGroupPost(int Gid, int Pid)
+        {
+           
+            string query = @"INSERT INTO [dbo].[Has_Group_Post]([gid], [pid])"  +
+                            $"VALUES ({Gid}, {Pid})";
+
+            QueryHandler.SqlExecutionQueryFromConnection(query, dbConnection);
+         
         }
 
     }

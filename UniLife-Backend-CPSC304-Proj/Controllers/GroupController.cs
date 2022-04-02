@@ -192,6 +192,38 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
             }
         }
 
+        [HttpGet("Posts/{Gid}")]
+        public ActionResult<List<PostModel>> getGroupPostId(int Gid)
+        {
+            try
+            {
+                return groupService.getGroupPostIDs(Gid);
+            }
+            catch (SqlException ex)
+            {
+                return this.BadRequest($"[SQL Query Error]: {ex.Message}");
+            }
+        }
+
+        [HttpPost("create/GroupPost")]
+        public ActionResult createGroupPost([FromBody] NewGroupPost ngp)
+        {
+
+
+            int Gid = ngp.Gid;
+            int Pid = ngp.Pid;
+            try
+            {
+                groupService.CreateGroupPost(Gid, Pid);
+                return Ok();
+
+            }
+            catch (SqlException ex)
+            {
+                return this.BadRequest($"[SQL Query Error]: {ex.Message}");
+            }
+
+        }
     }
 }
 
