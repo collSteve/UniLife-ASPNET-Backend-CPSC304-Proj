@@ -142,7 +142,7 @@ namespace UniLife_Backend_CPSC304_Proj.Services
             return groupL[0].Gid;
         }
         //checks if given aid is admin in gid
-        public Boolean isAdmin(int gid, int aid) {
+        /*public Boolean isAdmin(int gid, int aid) {
             string query = @$"SELECT Role FROM [dbo].[Member_Of] WHERE Gid = {gid} and Aid = {aid}";
 
             Func<DbDataReader, GroupModel> mapFunction = (x) =>
@@ -157,7 +157,7 @@ namespace UniLife_Backend_CPSC304_Proj.Services
             string val = groupL[0].GroupName;
 
             return (val.Equals("admin"));
-        }
+        }*/
         //selects groups excluding those given aid is in
         public List<GroupModel> getNewGroups(int aid)
         {

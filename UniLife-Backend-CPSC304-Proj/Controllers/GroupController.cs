@@ -141,7 +141,9 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
                 return this.BadRequest($"[SQL Query Error]: {ex.Message}");
             }
         }
-        [HttpGet("group/{Gid}/{Aid}")]
+
+
+        /*[HttpGet("group/{Gid}/{Aid}")]
         public ActionResult<Boolean> isAdmin(int Gid, int Aid) {
             try
             {
@@ -150,7 +152,7 @@ namespace UniLife_Backend_CPSC304_Proj.Controllers
             catch (SqlException ex) {
                 return this.BadRequest($"[SQL Query Error]: {ex.Message}");
             }
-        }
+        }*/
 
         [HttpGet("{Aid}")]
         public ActionResult<List<GroupModel>> getNewGroups(int Aid)
