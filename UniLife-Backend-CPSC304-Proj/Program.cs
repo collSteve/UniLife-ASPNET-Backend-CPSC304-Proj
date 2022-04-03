@@ -53,12 +53,21 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseCors(MyAllowSpecificOrigins);
+app.UseRouting();
 
 app.UseAuthorization();
 
 app.MapControllers();
 
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllerRoute(
+        name: "default",
+        pattern: "{controller}/{action=Index}/{id?}");
+});
+
 // serve static files
+app.UseStatusCodePagesWithReExecute("/");
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
