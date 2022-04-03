@@ -291,14 +291,14 @@ namespace UniLife_Backend_CPSC304_Proj.Services
                     UserswithMaximumRatingObj o = new UserswithMaximumRatingObj();
                     o.AID = (int)u[0];
                     o.username = (string)u[1];
-                    o.max_rating = (float)u[2];
+                    o.max_rating = (double)u[2];
                     return o;
                 });
 
             sQuery.Select("A.[AID], A.[username], UA.[Seller_Rating]")
                 .From("[dbo].User_Account UA, [dbo].Account A")
                 .Where("UA.AID = A.AID and UA.Seller_Rating =" +
-                "Select MAX(UA2.Seller_Rating) from [dbo].User_Account UA2)");
+                "(Select MAX(UA2.Seller_Rating) from [dbo].User_Account UA2)");
 
             return QueryHandler.SqlQueryFromConnection(sQuery, dbConnection);
         }
