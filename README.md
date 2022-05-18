@@ -1,4 +1,4 @@
-# UniLife-ASPNET-Backend-CPSC304-Proj
+# UniLife ASPNET Backend Proj
 This the asp.net backend for our UniLife Project -- an online trading and social communication application.
 
 Our entrie Unilife online trading application is developed through the following three dev repositories:
